@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "aiotgram"
+version = "0.1.0"
+description = ""
+authors = ["mkbeh <91bb64437ac5ab5148b76b33efb218f4ef092a2c>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+aiohttp = "^3.6.2"
+fastapi = "^0.60.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
