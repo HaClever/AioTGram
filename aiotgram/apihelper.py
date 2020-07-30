@@ -6,23 +6,59 @@ import aiohttp
 from .types import JsonDeserializable
 
 
-API_URL = 'https://api.telegram.org/bot{token}/{method_name}'
+_API_URL = 'https://api.telegram.org/bot{token}/{method_name}'
+
+_SESSION = None
+
+_READ_TIMEOUT = 5
+_DELAY_BETWEEN_REQUESTS = 10
+
+
+async def _get_req_session():
+    global _SESSION
+    session = _SESSION
+
+    if not session or session.closed:
+        _SESSION = aiohttp.ClientSession(read_timeout=_READ_TIMEOUT)
+
+    return _SESSION
+
+
+async def fetch(session, method, request_url, params):
+    try:
+        result = await session.request(method, request_url, data=params)
+    except(aiohttp.client_exceptions.ClientConnectionError,
+           asyncio.TimeoutError):
+        result = await fetch(session, method, request_url, params)
+    except BaseException:
+        raise AttributeError
+
+    return result
 
 
 async def _make_request(token, method_name, method='get', params=None):
-    request_url = API_URL.format(token=token, method_name=method_name)
+    request_url = _API_URL.format(token=token, method_name=method_name)
+    session = await _get_req_session()
 
-    async with aiohttp.ClientSession(read_timeout=3) as session:
-        try:
-            async with session.post(request_url, data=params) as response:
-                result = await response.json()
-        except(aiohttp.client_exceptions.ClientConnectionError, asyncio.TimeoutError):
-            result = await _make_request(token, request_url)
-        except:
-            # TODO: Need to raise up exception.
-            pass
+    try:
+        result = await session.request(method, request_url, data=params)
+    except(aiohttp.client_exceptions.ClientConnectionError,
+           asyncio.TimeoutError):
+        result = await _make_request(token, method_name, method, params)
+    except:
+        msg = 'No connection to server. Used method: {}'.format(method_name)
+        raise ApiException(msg, method_name)
 
-        return await _check_result(method_name, result)
+    if result and result.status == 429:    # too many requests
+        await asyncio.sleep(5)
+
+        while True:
+            result = await fetch(session, method, request_url, params)
+
+            if result and result.status == 200:
+                break
+
+    return await _check_result(method_name, result)
 
 
 async def _check_result(method_name, result):
@@ -33,20 +69,20 @@ async def _check_result(method_name, result):
         - The content of the result is invalid JSON.
         - The method call was unsuccessful (The JSON 'ok' field equals False)
     """
-    if result['error_code']:
-        msg = 'The server returned HTTP {0} {1}. Response body:\n[{2}]' \
-            .format(result['error_code'], result['description'], result)
+    pass
 
 
 def set_webhook(token, url):
     method_url = 'setWebhook'
     payload = {'url': url}
-    asyncio.create_task(
-        _make_request(
-            token,
-            method_url,
-            method='post',
-            params=payload))
+
+    for i in range(5):
+        asyncio.create_task(
+            _make_request(
+                token,
+                method_url,
+                method='post',
+                params=payload))
 
 
 def delete_webhook(token):
@@ -79,3 +115,17 @@ async def _convert_markup(markup):
         return await markup.to_json()
 
     return markup
+
+
+class ApiException(Exception):
+    """
+    This class represents an Exception thrown when a call to the Telegram API fails.
+    In addition to an informative message, it has a `function_name` and a `result` attribute, which respectively
+    contain the name of the failed function and the returned result that made the function to be considered  as
+    failed.
+    """
+
+    def __init__(self, msg, function_name, result=None):
+        super(ApiException, self).__init__("A request to the Telegram API was unsuccessful. {0}".format(msg))
+        self.function_name = function_name
+        self.result = result
