@@ -24,14 +24,15 @@ async def _get_req_session():
     return _SESSION
 
 
-async def fetch(session, method, request_url, params):
+async def _fetch(session, method_name, method, request_url, params):
     try:
         result = await session.request(method, request_url, data=params)
     except(aiohttp.client_exceptions.ClientConnectionError,
            asyncio.TimeoutError):
-        result = await fetch(session, method, request_url, params)
+        result = None
     except BaseException:
-        raise AttributeError
+        msg = 'No connection to server. Used method: {}'.format(method_name)
+        raise ApiException(msg, method_name)
 
     return result
 
@@ -44,16 +45,15 @@ async def _make_request(token, method_name, method='get', params=None):
         result = await session.request(method, request_url, data=params)
     except(aiohttp.client_exceptions.ClientConnectionError,
            asyncio.TimeoutError):
-        result = await _make_request(token, method_name, method, params)
+        result = await _fetch(session, method_name, method, request_url, params)
     except:
         msg = 'No connection to server. Used method: {}'.format(method_name)
         raise ApiException(msg, method_name)
 
-    if result and result.status == 429:    # too many requests
-        await asyncio.sleep(5)
-
+    if result.status == 429:    # code 429: too many requests
         while True:
-            result = await fetch(session, method, request_url, params)
+            await asyncio.sleep(5)
+            result = await _fetch(session, method_name, method, request_url, params)
 
             if result and result.status == 200:
                 break
@@ -65,11 +65,22 @@ async def _check_result(method_name, result):
     """
     Checks whether `result` is a valid API response.
     A result is considered invalid if:
-        - The server returned an HTTP response code other than 200
         - The content of the result is invalid JSON.
         - The method call was unsuccessful (The JSON 'ok' field equals False)
     """
-    pass
+    try:
+        result_json = await result.json()
+    except:
+        msg = 'The server returned an invalid JSON response. Response body:\n[{0}]' \
+            .format(result.text)
+        raise ApiException(msg, method_name, result)
+
+    if not result_json['ok']:
+        msg = 'Error code: {0} Description: {1}' \
+            .format(result_json['error_code'], result_json['description'])
+        raise ApiException(msg, method_name, result)
+
+    return result_json
 
 
 def set_webhook(token, url):
