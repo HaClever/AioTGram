@@ -9,21 +9,39 @@ from .types import JsonDeserializable
 API_URL = 'https://api.telegram.org/bot{token}/{method_name}'
 
 
-# TODO: need to save client session in var.
-
-
 async def _make_request(token, method_name, method='get', params=None):
     request_url = API_URL.format(token=token, method_name=method_name)
 
-    async with aiohttp.ClientSession() as session:
-        async with session.post(request_url, data=params) as resp:
+    async with aiohttp.ClientSession(read_timeout=3) as session:
+        try:
+            async with session.post(request_url, data=params) as response:
+                result = await response.json()
+        except(aiohttp.client_exceptions.ClientConnectionError, asyncio.TimeoutError):
+            result = await _make_request(token, request_url)
+        except:
+            # TODO: Need to raise up exception.
             pass
+
+        return await _check_result(method_name, result)
+
+
+async def _check_result(method_name, result):
+    """
+    Checks whether `result` is a valid API response.
+    A result is considered invalid if:
+        - The server returned an HTTP response code other than 200
+        - The content of the result is invalid JSON.
+        - The method call was unsuccessful (The JSON 'ok' field equals False)
+    """
+    if result['error_code']:
+        msg = 'The server returned HTTP {0} {1}. Response body:\n[{2}]' \
+            .format(result['error_code'], result['description'], result)
 
 
 def set_webhook(token, url):
     method_url = 'setWebhook'
     payload = {'url': url}
-    asyncio.ensure_future(
+    asyncio.create_task(
         _make_request(
             token,
             method_url,
@@ -33,7 +51,7 @@ def set_webhook(token, url):
 
 def delete_webhook(token):
     method_url = 'deleteWebhook'
-    asyncio.ensure_future(
+    asyncio.create_task(
         _make_request(token, method_url)
     )
 

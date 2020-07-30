@@ -8,6 +8,9 @@ authors = ["mkbeh <91bb64437ac5ab5148b76b33efb218f4ef092a2c>"]
 python = "^3.8"
 aiohttp = "^3.6.2"
 fastapi = "^0.60.1"
+ujson = "^3.0.0"
+uvicorn = "^0.11.7"
+aiodns = "^2.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
