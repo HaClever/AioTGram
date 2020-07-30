@@ -76,13 +76,12 @@ def set_webhook(token, url):
     method_url = 'setWebhook'
     payload = {'url': url}
 
-    for i in range(5):
-        asyncio.create_task(
-            _make_request(
-                token,
-                method_url,
-                method='post',
-                params=payload))
+    asyncio.create_task(
+        _make_request(
+            token,
+            method_url,
+            method='post',
+            params=payload))
 
 
 def delete_webhook(token):
