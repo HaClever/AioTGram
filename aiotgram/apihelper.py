@@ -14,16 +14,6 @@ _READ_TIMEOUT = 5
 _DELAY_BETWEEN_REQUESTS = 10
 
 
-async def _get_req_session():
-    global _SESSION
-    session = _SESSION
-
-    if not session or session.closed:
-        _SESSION = aiohttp.ClientSession(read_timeout=_READ_TIMEOUT)
-
-    return _SESSION
-
-
 async def _fetch(session, method_name, method, request_url, params):
     try:
         result = await session.request(method, request_url, data=params)
@@ -35,6 +25,16 @@ async def _fetch(session, method_name, method, request_url, params):
         raise ApiException(msg, method_name)
 
     return result
+
+
+async def _get_req_session():
+    global _SESSION
+    session = _SESSION
+
+    if not session or session.closed:
+        _SESSION = aiohttp.ClientSession(read_timeout=_READ_TIMEOUT)
+
+    return _SESSION
 
 
 async def _make_request(token, method_name, method='get', params=None):
@@ -83,23 +83,20 @@ async def _check_result(method_name, result):
     return result_json
 
 
-def set_webhook(token, url):
+async def set_webhook(token, url):
     method_url = 'setWebhook'
     payload = {'url': url}
 
-    asyncio.create_task(
-        _make_request(
-            token,
-            method_url,
-            method='post',
-            params=payload))
+    await _make_request(
+        token,
+        method_url,
+        method='post',
+        params=payload)
 
 
-def delete_webhook(token):
+async def delete_webhook(token):
     method_url = 'deleteWebhook'
-    asyncio.create_task(
-        _make_request(token, method_url)
-    )
+    await _make_request(token, method_url)
 
 
 async def send_message(token, chat_id, text,

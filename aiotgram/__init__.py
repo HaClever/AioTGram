@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from . import apihelper
+from aiotgram import apihelper
 
-from . import MemoryHandlerBackend, FileHandlerBackend
+from aiotgram.handler_backends import MemoryHandlerBackend, FileHandlerBackend
 
 
 __version__ = '0.1.0'
@@ -29,7 +29,7 @@ class AioTGram:
         if not self.reply_backend:
             self.reply_backend = MemoryHandlerBackend()
 
-    def enable_save_next_step_handler(self, delay=120, filename='./.handler-saves/step.save'):
+    async def enable_save_next_step_handlers(self, delay=120, filename='./.handler-saves/step.save'):
         """
         Enable saving next step handlers (by default saving disabled)
 
@@ -44,14 +44,26 @@ class AioTGram:
         """
         self.next_step_backend = FileHandlerBackend(self.next_step_backend.handlers, filename, delay)
 
-    def load_next_step_handlers(self, filename="./.handler-saves/step.save", del_file_after_loading=True):
-        pass
+    async def load_next_step_handlers(self, filename="./.handler-saves/step.save", del_file_after_loading=True):
+        """
+        Load next step handlers from save file
 
-    def set_webhook(self, url):
-        apihelper.set_webhook(self.token, url)
+        This function is left to keep backward compatibility whose purpose was to load handlers from file with the
+        help of FileHandlerBackend and is only recommended to use if next_step_backend was assigned as
+        FileHandlerBackend before entering this function
 
-    def delete_webhook(self):
-        apihelper.delete_webhook(self.token)
+        Most probably this function should be deprecated in future major releases
+
+        :param filename: Filename of the file where handlers was saved
+        :param del_file_after_loading: Is passed True, after loading save file will be deleted
+        """
+        await self.next_step_backend.load_handlers(filename, del_file_after_loading)
+
+    async def set_webhook(self, url):
+        await apihelper.set_webhook(self.token, url)
+
+    async def delete_webhook(self):
+        await apihelper.delete_webhook(self.token)
 
     async def send_message(self, chat_id, text, reply_markup=None):
         await apihelper.send_message(self.token, chat_id, text, reply_markup)
