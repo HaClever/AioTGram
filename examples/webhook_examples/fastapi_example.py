@@ -5,10 +5,10 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from starlette.routing import Route
 
-import aiotgram
+from aiotgram import AioTGram
 
 
-bot = aiotgram.AioTGram('<bot_token>')
+bot = AioTGram('<bot_token>')
 
 
 async def handler(request: Request):
