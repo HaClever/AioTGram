@@ -52,7 +52,8 @@ async def _make_request(token, method_name, method='get', params=None):
 
     if result.status == 429:    # code 429: too many requests
         while True:
-            await asyncio.sleep(5)
+            # TODO: require tests for this again
+            await asyncio.sleep(_DELAY_BETWEEN_REQUESTS)
             result = await _fetch(session, method_name, method, request_url, params)
 
             if result and result.status == 200:
