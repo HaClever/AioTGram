@@ -348,9 +348,9 @@ class UserProfilePhotos(JsonDeserializable):
         photos = []
         for x in obj['photos']:
             photos.extend(
-                await asyncio.gather(*(
-                    asyncio.create_task(PhotoSize.de_json(y)) for y in x
-                ))
+                await asyncio.gather(
+                    *(asyncio.create_task(PhotoSize.de_json(y)) for y in x)
+                )
             )
 
         return cls(total_count, photos)
