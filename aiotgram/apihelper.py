@@ -3,7 +3,7 @@ import asyncio
 
 import aiohttp
 
-from .types import JsonDeserializable
+from aiotgram import types as bot_types
 
 
 _API_URL = 'https://api.telegram.org/bot{token}/{method_name}'
@@ -118,7 +118,7 @@ async def send_notification(token, chat_id, text,
 
 
 async def _convert_markup(markup):
-    if isinstance(markup, JsonDeserializable):
+    if isinstance(markup, bot_types.JsonDeserializable):
         return await markup.to_json()
 
     return markup
