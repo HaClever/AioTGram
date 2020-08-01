@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import asyncio
+
 try:
     import ujson as json
 except ImportError:
@@ -11,11 +13,11 @@ from .base import JsonDeserializable, Dictionaryable, JsonSerializable
 
 class WebhookInfo(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         url = obj['url']
         has_custom_certificate = obj['has_custom_certificate']
         pending_update_count = obj['pending_update_count']
@@ -40,11 +42,11 @@ class WebhookInfo(JsonDeserializable):
 
 class User(JsonDeserializable, Dictionaryable, JsonSerializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         id_ = obj['id']
         is_bot = obj['is_bot']
         first_name = obj['first_name']
@@ -70,10 +72,10 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.can_read_all_group_messages = can_read_all_group_messages
         self.supports_inline_queries = supports_inline_queries
 
-    def to_json(self):
+    async def to_json(self):
         return json.dumps(self.to_dict())
 
-    def to_dict(self):
+    async def to_dict(self):
         return {'id': self.id_,
                 'is_bot': self.is_bot,
                 'first_name': self.first_name,
@@ -87,16 +89,16 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
 
 class MessageEntity(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         type_ = obj['type']
         offset = obj['offset']
         length = obj['length']
         url = obj.get('url')
-        user = User.de_json(obj.get('user'))
+        user = await User.de_json(obj.get('user'))
 
         return cls(type_, offset, length, url, user)
 
@@ -110,11 +112,11 @@ class MessageEntity(JsonDeserializable):
 
 class Dice(JsonSerializable, Dictionaryable, JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         value = obj['value']
         emoji = obj['emoji']
 
@@ -124,21 +126,21 @@ class Dice(JsonSerializable, Dictionaryable, JsonDeserializable):
         self.value = value
         self.emoji = emoji
 
-    def to_json(self):
-        return json.dumps(self.to_dict())
+    async def to_json(self):
+        return json.dumps(await self.to_dict())
 
-    def to_dict(self):
+    async def to_dict(self):
         return {'value': self.value,
                 'emoji': self.emoji}
 
 
 class PhotoSize(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         file_id = obj['file_id']
         width = obj['width']
         height = obj['height']
@@ -155,11 +157,11 @@ class PhotoSize(JsonDeserializable):
 
 class Audio(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         file_id = obj['file_id']
         duration = obj['duration']
         performer = obj.get('performer')
@@ -180,11 +182,11 @@ class Audio(JsonDeserializable):
 
 class Voice(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         file_id = obj['file_id']
         duration = obj['duration']
         mime_type = obj.get('mime_type')
@@ -201,15 +203,15 @@ class Voice(JsonDeserializable):
 
 class Document(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         file_id = obj['file_id']
         thumb = None
         if 'thumb' in obj and 'file_id' in obj['thumb']:
-            thumb = PhotoSize.de_json(obj['thumb'])
+            thumb = await PhotoSize.de_json(obj['thumb'])
 
         file_name = obj.get('file_name')
         mime_type = obj.get('mime_type')
@@ -227,16 +229,16 @@ class Document(JsonDeserializable):
 
 class Video(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         file_id = obj['file_id']
         width = obj['width']
         height = obj['height']
         duration = obj['duration']
-        thumb = PhotoSize.de_json(obj.get('thumb'))
+        thumb = await PhotoSize.de_json(obj.get('thumb'))
         mime_type = obj.get('mime_type')
         file_size = obj.get('file_size')
 
@@ -254,15 +256,15 @@ class Video(JsonDeserializable):
 
 class VideoNote(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         file_id = obj['file_id']
         length = obj['length']
         duration = obj['duration']
-        thumb = PhotoSize.de_json(obj.get('thumb'))
+        thumb = await PhotoSize.de_json(obj.get('thumb'))
         file_size = obj.get('file_size')
 
         return cls(file_id, length, duration, thumb, file_size)
@@ -277,11 +279,11 @@ class VideoNote(JsonDeserializable):
 
 class Contact(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         phone_number = obj['phone_number']
         first_name = obj['first_name']
         last_name = obj.get('last_name')
@@ -298,11 +300,11 @@ class Contact(JsonDeserializable):
 
 class Location(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         longitude = obj['longitude']
         latitude = obj['latitude']
 
@@ -315,12 +317,12 @@ class Location(JsonDeserializable):
 
 class Venue(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
-        location = Location.de_json(obj['location'])
+        obj = await cls.check_json(json_string)
+        location = await Location.de_json(obj['location'])
         title = obj['title']
         address = obj['address']
         foursquare_id = obj.get('foursquare_id')
@@ -336,13 +338,20 @@ class Venue(JsonDeserializable):
 
 class UserProfilePhotos(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         total_count = obj['total_count']
-        photos = [[PhotoSize.de_json(y) for y in x] for x in obj['photos']]
+
+        photos = []
+        for x in obj['photos']:
+            photos.extend(
+                await asyncio.gather(*(
+                    asyncio.create_task(PhotoSize.de_json(y)) for y in x
+                ))
+            )
 
         return cls(total_count, photos)
 
@@ -353,11 +362,11 @@ class UserProfilePhotos(JsonDeserializable):
 
 class File(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         file_id = obj['file_id']
         file_size = obj.get('file_size')
         file_path = obj.get('file_path')
@@ -374,7 +383,7 @@ class ForceReply(JsonSerializable):
     def __init__(self, selective=None):
         self.selective = selective
 
-    def to_json(self):
+    async def to_json(self):
         json_dict = {'force_reply': True}
         if self.selective:
             json_dict['selective'] = True
@@ -385,7 +394,7 @@ class ReplyKeyboardRemove(JsonSerializable):
     def __init__(self, selective=None):
         self.selective = selective
 
-    def to_json(self):
+    async def to_json(self):
         json_dict = {'remove_keyboard': True}
         if self.selective:
             json_dict['selective'] = True
@@ -400,7 +409,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         self.row_width = row_width
         self.keyboard = []
 
-    def add(self, *args):
+    async def add(self, *args):
         """
         This function adds strings to the keyboard, while not exceeding row_width.
         E.g. ReplyKeyboardMarkup#add("A", "B", "C") yields the json result {keyboard: [["A"], ["B"], ["C"]]}
@@ -425,7 +434,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         if len(row) > 0:
             self.keyboard.append(row)
 
-    def row(self, *args):
+    async def row(self, *args):
         """
         Adds a list of KeyboardButton to the keyboard. This function does not consider row_width.
         ReplyKeyboardMarkup#row("A")#row("B", "C")#to_json() outputs '{keyboard: [["A"], ["B", "C"]]}'
@@ -442,7 +451,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         self.keyboard.append(btn_array)
         return self
 
-    def to_json(self):
+    async def to_json(self):
         """
         Converts this object to its json representation following the Telegram API guidelines described here:
         https://core.telegram.org/bots/api#replykeyboardmarkup
@@ -465,17 +474,17 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
         self.request_location = request_location
         self.request_poll = request_poll
 
-    def to_json(self):
+    async def to_json(self):
         return json.dumps(self.to_dict())
 
-    def to_dict(self):
+    async def to_dict(self):
         json_dict = {'text': self.text}
         if self.request_contact:
             json_dict['request_contact'] = self.request_contact
         if self.request_location:
             json_dict['request_location'] = self.request_location
         if self.request_poll:
-            json_dict['request_poll'] = self.request_poll.to_dict()
+            json_dict['request_poll'] = await self.request_poll.to_dict()
         return json_dict
 
 
@@ -483,7 +492,7 @@ class KeyboardButtonPollType(Dictionaryable):
     def __init__(self, type=''):
         self.type = type
 
-    def to_dict(self):
+    async def to_dict(self):
         return {'type': self.type}
 
 
@@ -497,7 +506,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         self.row_width = row_width
         self.keyboard = []
 
-    def add(self, *args):
+    async def add(self, *args):
         """
         This method adds buttons to the keyboard without exceeding row_width.
         E.g. InlineKeyboardMarkup#add("A", "B", "C") yields the json result:
@@ -519,7 +528,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         if len(row) > 0:
             self.keyboard.append(row)
 
-    def row(self, *args):
+    async def row(self, *args):
         """
         Adds a list of InlineKeyboardButton to the keyboard.
             This metod does not consider row_width.
@@ -529,11 +538,13 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         :param args: Array of InlineKeyboardButton to append to the keyboard
         :return: self, to allow function chaining.
         """
-        button_array = [button.to_dict() for button in args]
-        self.keyboard.append(button_array)
+        button_array = await asyncio.gather(
+            *(asyncio.create_task(button.to_dict()) for button in args)
+        )
+        self.keyboard.extend(button_array)
         return self
 
-    def to_json(self):
+    async def to_json(self):
         """
         Converts this object to its json representation
             following the Telegram API guidelines described here:
@@ -542,7 +553,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         """
         return json.dumps(self.to_dict())
 
-    def to_dict(self):
+    async def to_dict(self):
         json_dict = {'inline_keyboard': self.keyboard}
         return json_dict
 
@@ -554,10 +565,10 @@ class LoginUrl(Dictionaryable, JsonSerializable):
         self.bot_username = bot_username
         self.request_write_access = request_write_access
 
-    def to_json(self):
-        return json.dumps(self.to_dict())
+    async def to_json(self):
+        return json.dumps(await self.to_dict())
 
-    def to_dict(self):
+    async def to_dict(self):
         json_dict = {'url': self.url}
         if self.forward_text:
             json_dict['forward_text'] = self.forward_text
@@ -580,11 +591,12 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable):
         self.pay = pay
         self.login_url = login_url
 
-    def to_json(self):
-        return json.dumps(self.to_dict())
+    async def to_json(self):
+        return json.dumps(await self.to_dict())
 
-    def to_dict(self):
+    async def to_dict(self):
         json_dict = {'text': self.text}
+
         if self.url:
             json_dict['url'] = self.url
         if self.callback_data:
@@ -598,7 +610,8 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable):
         if self.pay is not None:
             json_dict['pay'] = self.pay
         if self.login_url is not None:
-            json_dict['login_url'] = self.login_url.to_dict()
+            json_dict['login_url'] = await self.login_url.to_dict()
+
         return json_dict
 
 
@@ -614,8 +627,8 @@ class BotCommand(JsonSerializable):
         self.command = command
         self.description = description
 
-    def to_json(self):
-        return json.dumps(self.to_dict())
+    async def to_json(self):
+        return json.dumps(await self.to_dict())
 
-    def to_dict(self):
+    async def to_dict(self):
         return {'command': self.command, 'description': self.description}

@@ -10,14 +10,14 @@ from .common import User, Location
 
 class InlineQuery(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         id_ = obj['id']
-        from_user = User.de_json(obj['from'])
-        location = Location.de_json(obj.get('location'))
+        from_user = await User.de_json(obj['from'])
+        location = await Location.de_json(obj.get('location'))
         query = obj['query']
         offset = obj['offset']
 
@@ -48,7 +48,7 @@ class InputTextMessageContent(Dictionaryable):
         self.parse_mode = parse_mode
         self.disable_web_page_preview = disable_web_page_preview
 
-    def to_dict(self):
+    async def to_dict(self):
         json_dic = {'message_text': self.message_text}
         if self.parse_mode:
             json_dic['parse_mode'] = self.parse_mode
@@ -63,7 +63,7 @@ class InputLocationMessageContent(Dictionaryable):
         self.longitude = longitude
         self.live_period = live_period
 
-    def to_dict(self):
+    async def to_dict(self):
         json_dic = {'latitude': self.latitude, 'longitude': self.longitude}
         if self.live_period:
             json_dic['live_period'] = self.live_period
@@ -78,7 +78,7 @@ class InputVenueMessageContent(Dictionaryable):
         self.address = address
         self.foursquare_id = foursquare_id
 
-    def to_dict(self):
+    async def to_dict(self):
         json_dict = {
             'latitude': self.latitude,
             'longitude': self.longitude,
@@ -96,7 +96,7 @@ class InputContactMessageContent(Dictionaryable):
         self.first_name = first_name
         self.last_name = last_name
 
-    def to_dict(self):
+    async def to_dict(self):
         json_dict = {'phone_numbe': self.phone_number, 'first_name': self.first_name}
         if self.last_name:
             json_dict['last_name'] = self.last_name
@@ -105,15 +105,15 @@ class InputContactMessageContent(Dictionaryable):
 
 class ChosenInlineResult(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         result_id = obj['result_id']
-        from_user = User.de_json(obj['from'])
+        from_user = await User.de_json(obj['from'])
         query = obj['query']
-        location = Location.de_json(obj.get('location'))
+        location = await Location.de_json(obj.get('location'))
         inline_message_id = obj.get('inline_message_id')
 
         return cls(result_id, from_user, query, location, inline_message_id)
@@ -163,14 +163,15 @@ class InlineQueryResultArticle(JsonSerializable):
         self.thumb_width = thumb_width
         self.thumb_height = thumb_height
 
-    def to_json(self):
+    async def to_json(self):
         json_dict = {
             'type': self.type,
             'id': self.id_,
             'title': self.title,
-            'input_message_content': self.input_message_content.to_dict()}
+            'input_message_content': await self.input_message_content.to_dict()}
+
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dict()
+            json_dict['reply_markup'] = await self.reply_markup.to_dict()
         if self.url:
             json_dict['url'] = self.url
         if self.hide_url:
@@ -183,6 +184,7 @@ class InlineQueryResultArticle(JsonSerializable):
             json_dict['thumb_width'] = self.thumb_width
         if self.thumb_height:
             json_dict['thumb_height'] = self.thumb_height
+
         return json.dumps(json_dict)
 
 
@@ -218,7 +220,7 @@ class InlineQueryResultPhoto(JsonSerializable):
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
 
-    def to_json(self):
+    async def to_json(self):
         json_dict = {'type': self.type, 'id': self.id_, 'photo_url': self.photo_url, 'thumb_url': self.thumb_url}
 
         if self.photo_width:
@@ -234,9 +236,9 @@ class InlineQueryResultPhoto(JsonSerializable):
         if self.parse_mode:
             json_dict['parse_mode'] = self.parse_mode
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dict()
+            json_dict['reply_markup'] = await self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dict()
+            json_dict['input_message_content'] = await self.input_message_content.to_dict()
 
         return json.dumps(json_dict)
 
@@ -269,7 +271,7 @@ class InlineQueryResultGif(JsonSerializable):
         self.input_message_content = input_message_content
         self.gif_duration = gif_duration
 
-    def to_json(self):
+    async def to_json(self):
         json_dict = {'type': self.type, 'id': self.id_, 'gif_url': self.gif_url, 'thumb_url': self.thumb_url}
         if self.gif_height:
             json_dict['gif_height'] = self.gif_height
@@ -280,9 +282,9 @@ class InlineQueryResultGif(JsonSerializable):
         if self.caption:
             json_dict['caption'] = self.caption
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dict()
+            json_dict['reply_markup'] = await self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dict()
+            json_dict['input_message_content'] = await self.input_message_content.to_dict()
         if self.gif_duration:
             json_dict['gif_duration'] = self.gif_duration
 
@@ -320,7 +322,7 @@ class InlineQueryResultMpeg4Gif(JsonSerializable):
         self.input_message_content = input_message_content
         self.mpeg4_duration = mpeg4_duration
 
-    def to_json(self):
+    async def to_json(self):
         json_dict = {'type': self.type, 'id': self.id_, 'mpeg4_url': self.mpeg4_url, 'thumb_url': self.thumb_url}
 
         if self.mpeg4_width:
@@ -334,9 +336,9 @@ class InlineQueryResultMpeg4Gif(JsonSerializable):
         if self.parse_mode:
             json_dict['parse_mode'] = self.parse_mode
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dict()
+            json_dict['reply_markup'] = await self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dict()
+            json_dict['input_message_content'] = await self.input_message_content.to_dict()
         if self.mpeg4_duration:
             json_dict['mpeg4_duration '] = self.mpeg4_duration
 
@@ -377,7 +379,7 @@ class InlineQueryResultVideo(JsonSerializable):
         self.input_message_content = input_message_content
         self.reply_markup = reply_markup
 
-    def to_json(self):
+    async def to_json(self):
         json_dict = {'type': self.type, 'id': self.id_, 'video_url': self.video_url, 'mime_type': self.mime_type,
                      'thumb_url': self.thumb_url, 'title': self.title}
 
@@ -394,9 +396,9 @@ class InlineQueryResultVideo(JsonSerializable):
         if self.parse_mode:
             json_dict['parse_mode'] = self.parse_mode
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dict()
+            json_dict['reply_markup'] = await self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dict()
+            json_dict['input_message_content'] = await self.input_message_content.to_dict()
 
         return json.dumps(json_dict)
 
@@ -415,7 +417,7 @@ class InlineQueryResultAudio(JsonSerializable):
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
 
-    def to_json(self):
+    async def to_json(self):
         json_dict = {'type': self.type, 'id': self.id_, 'audio_url': self.audio_url, 'title': self.title}
 
         if self.caption:
@@ -427,9 +429,9 @@ class InlineQueryResultAudio(JsonSerializable):
         if self.audio_duration:
             json_dict['audio_duration'] = self.audio_duration
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dict()
+            json_dict['reply_markup'] = await self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dict()
+            json_dict['input_message_content'] = await self.input_message_content.to_dict()
 
         return json.dumps(json_dict)
 
@@ -448,7 +450,7 @@ class InlineQueryResultVoice(JsonSerializable):
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
 
-    def to_json(self):
+    async def to_json(self):
         json_dict = {'type': self.type, 'id': self.id_, 'voice_url': self.voice_url, 'title': self.title}
 
         if self.caption:
@@ -460,9 +462,9 @@ class InlineQueryResultVoice(JsonSerializable):
         if self.voice_duration:
             json_dict['voice_duration'] = self.voice_duration
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dict()
+            json_dict['reply_markup'] = await self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dict()
+            json_dict['input_message_content'] = await self.input_message_content.to_dict()
 
         return json.dumps(json_dict)
 
@@ -484,7 +486,7 @@ class InlineQueryResultDocument(JsonSerializable):
         self.thumb_width = thumb_width
         self.thumb_height = thumb_height
 
-    def to_json(self):
+    async def to_json(self):
         json_dict = {'type': self.type, 'id': self.id_, 'title': self.title, 'document_url': self.document_url,
                      'mime_type': self.mime_type}
 
@@ -501,9 +503,9 @@ class InlineQueryResultDocument(JsonSerializable):
         if self.thumb_height:
             json_dict['thumb_height'] = self.thumb_height
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dict()
+            json_dict['reply_markup'] = await self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dict()
+            json_dict['input_message_content'] = await self.input_message_content.to_dict()
 
         return json.dumps(json_dict)
 
@@ -523,7 +525,7 @@ class InlineQueryResultLocation(JsonSerializable):
         self.thumb_width = thumb_width
         self.thumb_height = thumb_height
 
-    def to_json(self):
+    async def to_json(self):
         json_dict = {'type': self.type, 'id_': self.id_, 'latitude': self.latitude, 'longitude': self.longitude,
                      'title': self.title}
 
@@ -536,9 +538,9 @@ class InlineQueryResultLocation(JsonSerializable):
         if self.thumb_height:
             json_dict['thumb_height'] = self.thumb_height
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dict()
+            json_dict['reply_markup'] = await self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dict()
+            json_dict['input_message_content'] = await self.input_message_content.to_dict()
 
         return json.dumps(json_dict)
 
@@ -559,7 +561,7 @@ class InlineQueryResultVenue(JsonSerializable):
         self.thumb_width = thumb_width
         self.thumb_height = thumb_height
 
-    def to_json(self):
+    async def to_json(self):
         json_dict = {'type': self.type, 'id': self.id_, 'title': self.title, 'latitude': self.latitude,
                      'longitude': self.longitude, 'address': self.address}
 
@@ -572,9 +574,9 @@ class InlineQueryResultVenue(JsonSerializable):
         if self.thumb_height:
             json_dict['thumb_height'] = self.thumb_height
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dict()
+            json_dict['reply_markup'] = await self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dict()
+            json_dict['input_message_content'] = await self.input_message_content.to_dict()
 
         return json.dumps(json_dict)
 
@@ -593,7 +595,7 @@ class InlineQueryResultContact(JsonSerializable):
         self.thumb_width = thumb_width
         self.thumb_height = thumb_height
 
-    def to_json(self):
+    async def to_json(self):
         json_dict = {'type': self.type, 'id': self.id_, 'phone_number': self.phone_number, 'first_name': self.first_name}
 
         if self.last_name:
@@ -605,9 +607,9 @@ class InlineQueryResultContact(JsonSerializable):
         if self.thumb_height:
             json_dict['thumb_height'] = self.thumb_height
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dict()
+            json_dict['reply_markup'] = await self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dict()
+            json_dict['input_message_content'] = await self.input_message_content.to_dict()
 
         return json.dumps(json_dict)
 
@@ -624,7 +626,7 @@ class BaseInlineQueryResultCached(JsonSerializable):
         self.parse_mode = None
         self.payload_dic = {}
 
-    def to_json(self):
+    async def to_json(self):
         json_dict = self.payload_dic
         json_dict['type'] = self.type
         json_dict['id'] = self.id_
@@ -636,9 +638,9 @@ class BaseInlineQueryResultCached(JsonSerializable):
         if self.caption:
             json_dict['caption'] = self.caption
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dict()
+            json_dict['reply_markup'] = await self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dict()
+            json_dict['input_message_content'] = await self.input_message_content.to_dict()
         if self.parse_mode:
             json_dict['parse_mode'] = self.parse_mode
 

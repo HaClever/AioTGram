@@ -10,18 +10,18 @@ from .common import PhotoSize
 
 class StickerSet(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         name = obj['name']
         title = obj['title']
         contains_masks = obj['contains_masks']
 
         stickers = []
         for sticker in obj['stickers']:
-            stickers.append(Sticker.de_json(sticker))
+            stickers.append(await Sticker.de_json(sticker))
 
         return cls(name, title, contains_masks, stickers)
 
@@ -34,20 +34,20 @@ class StickerSet(JsonDeserializable):
 
 class Sticker(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         file_id = obj['file_id']
         file_unique_id = obj['file_unique_id']
         width = obj['width']
         height = obj['height']
         is_animated = obj['is_animated']
-        thumb = PhotoSize.de_json(obj.get('thumb'))
+        thumb = await PhotoSize.de_json(obj.get('thumb'))
         emoji = obj.get('emoji')
         set_name = obj.get('set_name')
-        mask_position = MaskPosition.de_json(obj.get('mask_position'))
+        mask_position = await MaskPosition.de_json(obj.get('mask_position'))
         file_size = obj.get('file_size')
 
         return cls(file_id, file_unique_id, width, height, thumb, emoji, set_name, mask_position, file_size, is_animated)
@@ -67,11 +67,11 @@ class Sticker(JsonDeserializable):
 
 class MaskPosition(Dictionaryable, JsonDeserializable, JsonSerializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         point = obj['point']
         x_shift = obj['x_shift']
         y_shift = obj['y_shift']
@@ -85,8 +85,8 @@ class MaskPosition(Dictionaryable, JsonDeserializable, JsonSerializable):
         self.y_shift = y_shift
         self.scale = scale
 
-    def to_json(self):
-        return json.dumps(self.to_dict())
+    async def to_json(self):
+        return json.dumps(await self.to_dict())
 
-    def to_dict(self):
+    async def to_dict(self):
         return {'point': self.point, 'x_shift': self.x_shift, 'y_shift': self.y_shift, 'scale': self.scale}

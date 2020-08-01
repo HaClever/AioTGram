@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import asyncio
+
 try:
     import ujson as json
 except ImportError:
@@ -17,17 +19,19 @@ class InputMedia(Dictionaryable, JsonSerializable):
         self.caption = caption
         self.parse_mode = parse_mode
 
-        if util.is_string(self.media):
+        media_is_str = asyncio.create_task(util.is_string(self.media))
+
+        if media_is_str:
             self._media_name = ''
             self._media_dic = self.media
         else:
-            self._media_name = util.generate_random_token()
+            self._media_name = asyncio.create_task(util.generate_random_token())
             self._media_dic = 'attach://{0}'.format(self._media_name)
 
-    def to_json(self):
-        return json.dumps(self.to_dict())
+    async def to_json(self):
+        return json.dumps(await self.to_dict())
 
-    def to_dict(self):
+    async def to_dict(self):
         json_dict = {'type': self.type, 'media': self._media_dic}
 
         if self.caption:
@@ -37,19 +41,19 @@ class InputMedia(Dictionaryable, JsonSerializable):
 
         return json_dict
 
-    def convert_input_media(self):
-        if util.is_string(self.media):
-            return self.to_json(), None
+    async def convert_input_media(self):
+        if await util.is_string(self.media):
+            return await self.to_json(), None
 
-        return self.to_json(), {self._media_name: self.media}
+        return await self.to_json(), {self._media_name: self.media}
 
 
 class InputMediaPhoto(InputMedia):
     def __init__(self, media, caption=None, parse_mode=None):
         super(InputMediaPhoto, self).__init__(type="photo", media=media, caption=caption, parse_mode=parse_mode)
 
-    def to_dict(self):
-        return super(InputMediaPhoto, self).to_dict()
+    async def to_dict(self):
+        return await super(InputMediaPhoto, self).to_dict()
 
 
 class InputMediaVideo(InputMedia):
@@ -62,8 +66,9 @@ class InputMediaVideo(InputMedia):
         self.duration = duration
         self.supports_streaming = supports_streaming
 
-    def to_dict(self):
-        ret = super(InputMediaVideo, self).to_dict()
+    async def to_dict(self):
+        ret = await super(InputMediaVideo, self).to_dict()
+
         if self.thumb:
             ret['thumb'] = self.thumb
         if self.width:
@@ -74,6 +79,7 @@ class InputMediaVideo(InputMedia):
             ret['duration'] = self.duration
         if self.supports_streaming:
             ret['supports_streaming'] = self.supports_streaming
+
         return ret
 
 
@@ -85,8 +91,9 @@ class InputMediaAnimation(InputMedia):
         self.height = height
         self.duration = duration
 
-    def to_dict(self):
-        ret = super(InputMediaAnimation, self).to_dict()
+    async def to_dict(self):
+        ret = await super(InputMediaAnimation, self).to_dict()
+
         if self.thumb:
             ret['thumb'] = self.thumb
         if self.width:
@@ -95,6 +102,7 @@ class InputMediaAnimation(InputMedia):
             ret['height'] = self.height
         if self.duration:
             ret['duration'] = self.duration
+
         return ret
 
 
@@ -106,8 +114,9 @@ class InputMediaAudio(InputMedia):
         self.performer = performer
         self.title = title
 
-    def to_dict(self):
-        ret = super(InputMediaAudio, self).to_dict()
+    async def to_dict(self):
+        ret = await super(InputMediaAudio, self).to_dict()
+
         if self.thumb:
             ret['thumb'] = self.thumb
         if self.duration:
@@ -116,6 +125,7 @@ class InputMediaAudio(InputMedia):
             ret['performer'] = self.performer
         if self.title:
             ret['title'] = self.title
+
         return ret
 
 
@@ -124,20 +134,22 @@ class InputMediaDocument(InputMedia):
         super(InputMediaDocument, self).__init__(type="document", media=media, caption=caption, parse_mode=parse_mode)
         self.thumb = thumb
 
-    def to_dict(self):
-        ret = super(InputMediaDocument, self).to_dict()
+    async def to_dict(self):
+        ret = await super(InputMediaDocument, self).to_dict()
+
         if self.thumb:
             ret['thumb'] = self.thumb
+
         return ret
 
 
 class PollOption(JsonSerializable, JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         text = obj['text']
         voter_count = int(obj['voter_count'])
 
@@ -147,20 +159,20 @@ class PollOption(JsonSerializable, JsonDeserializable):
         self.text = text
         self.voter_count = voter_count
 
-    def to_json(self):
+    async def to_json(self):
         # send_poll Option is a simple string: https://core.telegram.org/bots/api#sendpoll
         return json.dumps(self.text)
 
 
 class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         poll_id = obj['poll_id']
-        user = User.de_json(obj['user'])
+        user = await User.de_json(obj['user'])
         options_ids = obj['option_ids']
 
         return cls(poll_id, user, options_ids)
@@ -170,10 +182,10 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
         self.user = user
         self.options_ids = options_ids
 
-    def to_json(self):
-        return json.dumps(self.to_dict())
+    async def to_json(self):
+        return json.dumps(await self.to_dict())
 
-    def to_dict(self):
+    async def to_dict(self):
         return {'poll_id': self.poll_id,
-                'user': self.user.to_dict(),
+                'user': await self.user.to_dict(),
                 'options_ids': self.options_ids}

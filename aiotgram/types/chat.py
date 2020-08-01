@@ -10,28 +10,28 @@ from .common import User
 
 class GroupChat(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
-        id = obj['id']
+        obj = await cls.check_json(json_string)
+        id_ = obj['id']
         title = obj['title']
 
-        return cls(id, title)
+        return cls(id_, title)
 
-    def __init__(self, id, title):
-        self.id = id
+    def __init__(self, id_, title):
+        self.id_ = id_
         self.title = title
 
 
 class ChatPhoto(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         small_file_id = obj['small_file_id']
         big_file_id = obj['big_file_id']
 
@@ -44,12 +44,12 @@ class ChatPhoto(JsonDeserializable):
 
 class ChatMember(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
-        user = User.de_json(obj['user'])
+        obj = await cls.check_json(json_string)
+        user = await User.de_json(obj['user'])
         status = obj['status']
         custom_title = obj.get('custom_title')
         until_date = obj.get('until_date')
@@ -118,10 +118,11 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         self.can_pin_messages = can_pin_messages
 
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return json_string
-        obj = cls.check_json(json_string)
+
+        obj = await cls.check_json(json_string)
         can_send_messages = obj.get('can_send_messages')
         can_send_media_messages = obj.get('can_send_media_messages')
         can_send_polls = obj.get('can_send_polls')
@@ -136,10 +137,10 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
             can_send_other_messages, can_add_web_page_previews,
             can_change_info, can_invite_users, can_pin_messages)
 
-    def to_json(self):
+    async def to_json(self):
         return json.dumps(self.to_dict())
 
-    def to_dict(self):
+    async def to_dict(self):
         json_dict = dict()
         if self.can_send_messages is not None:
             json_dict['can_send_messages'] = self.can_send_messages

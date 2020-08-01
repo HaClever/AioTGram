@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .base import JsonSerializable
+from .base import JsonSerializable, JsonDeserializable
 
 from .update import Update
 

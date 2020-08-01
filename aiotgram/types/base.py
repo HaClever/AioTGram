@@ -26,17 +26,16 @@ class JsonDeserializable(metaclass=ABCMeta):
     """
 
     @classmethod
-    @abstractmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         """
         Returns an instance of this class from the given json dict or string.
         This function must be overridden by subclasses.
         :return: an instance of this class created from the given json dict or string.
         """
-        pass
+        raise NotImplementedError
 
     @staticmethod
-    def check_json(json_type):
+    async def check_json(json_type):
         """
         Checks whether json_type is a dict or a string. If it is already a dict, it is returned as-is.
         If it is not, it is converted to a dict by means of json.loads(json_type)

@@ -50,9 +50,9 @@ def extract_command(text):
     return text.split()[0].split('@')[0][1:] if is_command(text) else None
 
 
-def is_string(var):
+async def is_string(var):
     return isinstance(var, string_types)
 
 
-def generate_random_token():
+async def generate_random_token():
     return ''.join(random.sample(string.ascii_letters, 16))

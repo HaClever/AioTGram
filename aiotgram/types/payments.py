@@ -13,7 +13,7 @@ class LabeledPrice(JsonSerializable):
         self.label = label
         self.amount = amount
 
-    def to_json(self):
+    async def to_json(self):
         return json.dumps({
             'label': self.label, 'amount': self.amount
         })
@@ -21,11 +21,11 @@ class LabeledPrice(JsonSerializable):
 
 class Invoice(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         title = obj['title']
         description = obj['description']
         start_parameter = obj['start_parameter']
@@ -44,11 +44,11 @@ class Invoice(JsonDeserializable):
 
 class ShippingAddress(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         country_code = obj['country_code']
         state = obj['state']
         city = obj['city']
@@ -69,15 +69,15 @@ class ShippingAddress(JsonDeserializable):
 
 class OrderInfo(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         name = obj.get('name')
         phone_number = obj.get('phone_number')
         email = obj.get('email')
-        shipping_address = ShippingAddress.de_json(obj.get('shipping_address'))
+        shipping_address = await ShippingAddress.de_json(obj.get('shipping_address'))
 
         return cls(name, phone_number, email, shipping_address)
 
@@ -94,7 +94,7 @@ class ShippingOption(JsonSerializable):
         self.title = title
         self.prices = []
 
-    def add_price(self, *args):
+    async def add_price(self, *args):
         """
         Add LabeledPrice to ShippingOption
         :param args: LabeledPrices
@@ -103,26 +103,26 @@ class ShippingOption(JsonSerializable):
             self.prices.append(price)
         return self
 
-    def to_json(self):
+    async def to_json(self):
         price_list = []
         for price in self.prices:
-            price_list.append(price.to_dict())
+            price_list.append(await price.to_dict())
         json_dict = json.dumps({'id': self.id_, 'title': self.title, 'prices': price_list})
         return json_dict
 
 
 class SuccessfulPayment(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         currency = obj['currency']
         total_amount = obj['total_amount']
         invoice_payload = obj['invoice_payload']
         shipping_option_id = obj.get('shipping_option_id')
-        order_info = OrderInfo.de_json(obj.get('order_info'))
+        order_info = await OrderInfo.de_json(obj.get('order_info'))
         telegram_payment_charge_id = obj['telegram_payment_charge_id']
         provider_payment_charge_id = obj['provider_payment_charge_id']
 
@@ -142,15 +142,15 @@ class SuccessfulPayment(JsonDeserializable):
 
 class ShippingQuery(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         id_ = obj['id']
-        from_user = User.de_json(obj['from'])
+        from_user = await User.de_json(obj['from'])
         invoice_payload = obj['invoice_payload']
-        shipping_address = ShippingAddress.de_json(obj['shipping_address'])
+        shipping_address = await ShippingAddress.de_json(obj['shipping_address'])
 
         return cls(id_, from_user, invoice_payload, shipping_address)
 
@@ -163,18 +163,18 @@ class ShippingQuery(JsonDeserializable):
 
 class PreCheckoutQuery(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    async def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = cls.check_json(json_string)
+        obj = await cls.check_json(json_string)
         id_ = obj['id']
-        from_user = User.de_json(obj['from'])
+        from_user = await User.de_json(obj['from'])
         currency = obj['currency']
         total_amount = obj['total_amount']
         invoice_payload = obj['invoice_payload']
         shipping_option_id = obj.get('shipping_option_id')
-        order_info = OrderInfo.de_json(obj.get('order_info'))
+        order_info = await OrderInfo.de_json(obj.get('order_info'))
 
         return cls(id_, from_user, currency, total_amount, invoice_payload, shipping_option_id, order_info)
 
