@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+import string
+import random
 import asyncio
+
+from six import string_types
 
 
 class Timer:
@@ -44,3 +48,11 @@ def extract_command(text):
     :return: the command if `text` is a command (according to is_command), else None.
     """
     return text.split()[0].split('@')[0][1:] if is_command(text) else None
+
+
+def is_string(var):
+    return isinstance(var, string_types)
+
+
+def generate_random_token():
+    return ''.join(random.sample(string.ascii_letters, 16))

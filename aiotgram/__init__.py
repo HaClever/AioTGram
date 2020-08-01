@@ -3,7 +3,7 @@ import sys
 import re
 import six
 
-from aiotgram import apihelper, util
+from aiotgram import apihelper, types, util
 
 from aiotgram.handler_backends import MemoryHandlerBackend, FileHandlerBackend
 
