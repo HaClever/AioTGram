@@ -1,4 +1,14 @@
 # -*- coding: utf-8 -*-
+
+"""
+Module contains abstract base classes for all types.
+
+Classes:
+- Dictionaryable
+- JsonSerializable
+- JsonDeserializable
+"""
+
 try:
     import ujson as json
 except ImportError:

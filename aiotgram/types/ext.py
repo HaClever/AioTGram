@@ -1,4 +1,14 @@
 # -*- coding: utf-8 -*-
+"""
+Modules contains ext types.
+
+Types:
+- Chat
+- Message
+- CallbackQuery
+- Poll
+"""
+
 try:
     import ujson as json
 except ImportError:
@@ -6,13 +16,14 @@ except ImportError:
 
 from .base import JsonDeserializable
 
-from .common import (
-    User, Audio, Document, Video, VideoNote, Contact,
-    Location, Venue, Dice, PhotoSize, MessageEntity
+from .common import User, PhotoSize, MessageEntity
+from .primary import (
+    Audio, Document, Video, VideoNote,
+    Contact, Location, Venue, Dice
 )
 
 from .chat import ChatPhoto, ChatPermissions, GroupChat
-from .inputmedia import PollOption
+from .poll import PollOption
 from .games import Animation, Game
 from .stickers import Sticker
 from .payments import Invoice, SuccessfulPayment
@@ -320,7 +331,7 @@ class Message(JsonDeserializable):
 
             upd_text = upd_text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
             if not subst_type or not _subs.get(subst_type):
-                return 
+                return
 
             subs = _subs.get(subst_type)
             return subs.format(text=upd_text, url=url)

@@ -1,4 +1,15 @@
 # -*- coding: utf-8 -*-
+
+"""
+Modules contains games types.
+
+Types:
+- InlineQueryResultGame
+- Game
+- Animation
+- GameHighScore
+"""
+
 try:
     import ujson as json
 except ImportError:

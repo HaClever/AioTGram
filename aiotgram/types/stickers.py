@@ -1,4 +1,14 @@
 # -*- coding: utf-8 -*-
+
+"""
+Modules contains stickers types.
+
+Types:
+- StickerSet
+- Sticker
+- MaskPosition
+"""
+
 try:
     import ujson as json
 except ImportError:

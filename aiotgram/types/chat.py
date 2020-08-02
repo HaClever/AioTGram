@@ -1,4 +1,14 @@
 # -*- coding: utf-8 -*-
+"""
+Modules contains chat types.
+
+Types:
+- GroupChat
+- ChatPhoto
+- ChatMember
+- ChatPermissions
+"""
+
 try:
     import ujson as json
 except ImportError:

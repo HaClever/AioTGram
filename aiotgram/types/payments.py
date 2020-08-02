@@ -1,4 +1,19 @@
 # -*- coding: utf-8 -*-
+
+"""
+Modules contains payments types.
+
+Types:
+- LabeledPrice
+- Invoice
+- ShippingAddress
+- OrderInfo
+- ShippingOption
+- SuccessfulPayment
+- ShippingQuery
+- PreCheckoutQuery
+"""
+
 try:
     import ujson as json
 except ImportError:

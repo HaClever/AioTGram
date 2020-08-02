@@ -1,4 +1,17 @@
 # -*- coding: utf-8 -*-
+
+"""
+Modules contains keyboards types.
+
+Types:
+- ReplyKeyboardRemove
+- ReplyKeyboardMarkup
+- KeyboardButton
+- KeyboardButtonPollType
+- InlineKeyboardMarkup
+- InlineKeyboardButton
+"""
+
 import asyncio
 
 try:

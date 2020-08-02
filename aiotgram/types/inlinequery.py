@@ -1,11 +1,45 @@
 # -*- coding: utf-8 -*-
+
+"""
+Modules contains games inlinequery.
+
+Types:
+- InlineQuery
+- InputTextMessageContent
+- InputLocationMessageContent
+- InputVenueMessageContent
+- InputContactMessageContent
+- ChosenInlineResult
+- InlineQueryResultArticle
+- InlineQueryResultPhoto
+- InlineQueryResultGif
+- InlineQueryResultMpeg4Gif
+- InlineQueryResultVideo
+- InlineQueryResultAudio
+- InlineQueryResultVoice
+- InlineQueryResultDocument
+- InlineQueryResultLocation
+- InlineQueryResultVenue
+- InlineQueryResultContact
+- BaseInlineQueryResultCached
+- InlineQueryResultCachedPhoto
+- InlineQueryResultCachedGif
+- InlineQueryResultCachedMpeg4Gif
+- InlineQueryResultCachedSticker
+- InlineQueryResultCachedDocument
+- InlineQueryResultCachedVideo
+- InlineQueryResultCachedVoice
+- InlineQueryResultCachedAudio
+"""
+
 try:
     import ujson as json
 except ImportError:
     import json
 
 from .base import JsonDeserializable, Dictionaryable, JsonSerializable
-from .common import User, Location
+from .common import User
+from .primary import Location
 
 
 class InlineQuery(JsonDeserializable):

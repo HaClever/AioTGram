@@ -4,7 +4,7 @@ from .ext import Message, CallbackQuery, Poll
 
 from .inlinequery import InlineQuery, ChosenInlineResult
 from .payments import ShippingQuery, PreCheckoutQuery
-from .inputmedia import PollAnswer
+from .poll import PollAnswer
 
 
 class Update(JsonDeserializable):
