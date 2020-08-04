@@ -35,3 +35,8 @@ def get_routes():
 app = FastAPI(routes=get_routes())
 
 asyncio.get_running_loop().create_task(startup_actions())
+
+
+@bot.message_handler(commands=['start'])
+async def start(message):
+    pass

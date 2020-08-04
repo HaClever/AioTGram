@@ -260,7 +260,6 @@ class AioTGram:
         """
         for i, message in enumerate(new_messages):
             need_pop = False
-            print(111, self.next_step_backend)
             handlers = self.next_step_backend.get_handlers(message.chat.id)
             for handler in handlers:
                 need_pop = True
@@ -342,4 +341,4 @@ class AioTGram:
         }
 
     def _exec_task(self, task, *args, **kwargs):
-        task(*args, **kwargs)
+        asyncio.create_task(task(*args, **kwargs))
