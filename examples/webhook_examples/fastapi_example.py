@@ -20,7 +20,7 @@ async def startup_actions():
 
 async def handler(request: Request):
     request_body_dict = await request.json()
-    update = await aiotgram.types.Update.de_json(request_body_dict)
+    update = aiotgram.types.Update.de_json(request_body_dict)
 
     return JSONResponse({"status": "success"}, status_code=200)
 
