@@ -26,43 +26,43 @@ class InlineQueryResultGame(JsonSerializable):
         self.game_short_name = game_short_name
         self.reply_markup = reply_markup
 
-    async def to_json(self):
+    def to_json(self):
         json_dic = {'type': self.type, 'id': self.id_, 'game_short_name': self.game_short_name}
         if self.reply_markup:
-            json_dic['reply_markup'] = await self.reply_markup.to_dict()
+            json_dic['reply_markup'] = self.reply_markup.to_dict()
         return json.dumps(json_dic)
 
 
 class Game(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         title = obj['title']
         description = obj['description']
-        photo = await Game.parse_photo(obj['photo'])
+        photo = Game.parse_photo(obj['photo'])
         text = obj.get('text')
         text_entities = None
         if 'text_entities' in obj:
-            text_entities = await Game.parse_entities(obj['text_entities'])
-        animation = await Animation.de_json(obj.get('animation'))
+            text_entities = Game.parse_entities(obj['text_entities'])
+        animation = Animation.de_json(obj.get('animation'))
 
         return cls(title, description, photo, text, text_entities, animation)
 
     @classmethod
-    async def parse_photo(cls, photo_size_array):
+    def parse_photo(cls, photo_size_array):
         ret = []
         for photo_size in photo_size_array:
-            ret.append(await PhotoSize.de_json(photo_size))
+            ret.append(PhotoSize.de_json(photo_size))
         return ret
 
     @classmethod
-    async def parse_entities(cls, message_entity_array):
+    def parse_entities(cls, message_entity_array):
         ret = []
         for message_entity in message_entity_array:
-            ret.append(await MessageEntity.de_json(message_entity))
+            ret.append(MessageEntity.de_json(message_entity))
         return ret
 
     def __init__(self, title, description, photo, text=None, text_entities=None, animation=None):
@@ -76,13 +76,13 @@ class Game(JsonDeserializable):
 
 class Animation(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         file_id = obj['file_id']
-        thumb = await PhotoSize.de_json(obj.get('thumb'))
+        thumb = PhotoSize.de_json(obj.get('thumb'))
         file_name = obj.get('file_name')
         mime_type = obj.get('mime_type')
         file_size = obj.get('file_size')
@@ -99,13 +99,13 @@ class Animation(JsonDeserializable):
 
 class GameHighScore(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         position = obj['position']
-        user = await User.de_json(obj['user'])
+        user = User.de_json(obj['user'])
         score = obj['score']
 
         return cls(position, user, score)

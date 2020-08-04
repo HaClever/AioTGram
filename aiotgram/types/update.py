@@ -9,23 +9,23 @@ from .poll import PollAnswer
 
 class Update(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         update_id = obj['update_id']
-        message = await Message.de_json(obj.get('message'))
-        edited_message = await Message.de_json(obj.get('edited_message'))
-        channel_post = await Message.de_json(obj.get('channel_post'))
-        edited_channel_post = await Message.de_json(obj.get('edited_channel_post'))
-        inline_query = await InlineQuery.de_json(obj.get('inline_query'))
-        chosen_inline_result = await ChosenInlineResult.de_json(obj.get('chosen_inline_result'))
-        callback_query = await CallbackQuery.de_json(obj.get('callback_query'))
-        shipping_query = await ShippingQuery.de_json(obj.get('shipping_query'))
-        pre_checkout_query = await PreCheckoutQuery.de_json(obj.get('pre_checkout_query'))
-        poll = await Poll.de_json(obj.get('poll'))
-        poll_answer = await PollAnswer.de_json(obj.get('poll_answer'))
+        message = Message.de_json(obj.get('message'))
+        edited_message = Message.de_json(obj.get('edited_message'))
+        channel_post = Message.de_json(obj.get('channel_post'))
+        edited_channel_post = Message.de_json(obj.get('edited_channel_post'))
+        inline_query = InlineQuery.de_json(obj.get('inline_query'))
+        chosen_inline_result = ChosenInlineResult.de_json(obj.get('chosen_inline_result'))
+        callback_query = CallbackQuery.de_json(obj.get('callback_query'))
+        shipping_query = ShippingQuery.de_json(obj.get('shipping_query'))
+        pre_checkout_query = PreCheckoutQuery.de_json(obj.get('pre_checkout_query'))
+        poll = Poll.de_json(obj.get('poll'))
+        poll_answer = PollAnswer.de_json(obj.get('poll_answer'))
 
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer)

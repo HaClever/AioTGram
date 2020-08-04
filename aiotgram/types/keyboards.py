@@ -28,7 +28,7 @@ class ReplyKeyboardRemove(JsonSerializable):
     def __init__(self, selective=None):
         self.selective = selective
 
-    async def to_json(self):
+    def to_json(self):
         json_dict = {'remove_keyboard': True}
         if self.selective:
             json_dict['selective'] = True
@@ -43,7 +43,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         self.row_width = row_width
         self.keyboard = []
 
-    async def add(self, *args):
+    def add(self, *args):
         """
         This function adds strings to the keyboard, while not exceeding row_width.
         E.g. ReplyKeyboardMarkup#add("A", "B", "C") yields the json result {keyboard: [["A"], ["B"], ["C"]]}
@@ -68,7 +68,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         if len(row) > 0:
             self.keyboard.append(row)
 
-    async def row(self, *args):
+    def row(self, *args):
         """
         Adds a list of KeyboardButton to the keyboard. This function does not consider row_width.
         ReplyKeyboardMarkup#row("A")#row("B", "C")#to_json() outputs '{keyboard: [["A"], ["B", "C"]]}'
@@ -85,7 +85,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         self.keyboard.append(btn_array)
         return self
 
-    async def to_json(self):
+    def to_json(self):
         """
         Converts this object to its json representation following the Telegram API guidelines described here:
         https://core.telegram.org/bots/api#replykeyboardmarkup
@@ -108,17 +108,17 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
         self.request_location = request_location
         self.request_poll = request_poll
 
-    async def to_json(self):
+    def to_json(self):
         return json.dumps(self.to_dict())
 
-    async def to_dict(self):
+    def to_dict(self):
         json_dict = {'text': self.text}
         if self.request_contact:
             json_dict['request_contact'] = self.request_contact
         if self.request_location:
             json_dict['request_location'] = self.request_location
         if self.request_poll:
-            json_dict['request_poll'] = await self.request_poll.to_dict()
+            json_dict['request_poll'] = self.request_poll.to_dict()
         return json_dict
 
 
@@ -126,7 +126,7 @@ class KeyboardButtonPollType(Dictionaryable):
     def __init__(self, type=''):
         self.type = type
 
-    async def to_dict(self):
+    def to_dict(self):
         return {'type': self.type}
 
 
@@ -140,7 +140,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         self.row_width = row_width
         self.keyboard = []
 
-    async def add(self, *args):
+    def add(self, *args):
         """
         This method adds buttons to the keyboard without exceeding row_width.
         E.g. InlineKeyboardMarkup#add("A", "B", "C") yields the json result:
@@ -162,7 +162,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         if len(row) > 0:
             self.keyboard.append(row)
 
-    async def row(self, *args):
+    def row(self, *args):
         """
         Adds a list of InlineKeyboardButton to the keyboard.
             This metod does not consider row_width.
@@ -172,13 +172,12 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         :param args: Array of InlineKeyboardButton to append to the keyboard
         :return: self, to allow function chaining.
         """
-        button_array = await asyncio.gather(
-            *(asyncio.create_task(button.to_dict()) for button in args)
-        )
-        self.keyboard.extend(button_array)
+        for button in args:
+            self.keyboard.append(button.to_dict())
+
         return self
 
-    async def to_json(self):
+    def to_json(self):
         """
         Converts this object to its json representation
             following the Telegram API guidelines described here:
@@ -187,7 +186,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         """
         return json.dumps(self.to_dict())
 
-    async def to_dict(self):
+    def to_dict(self):
         json_dict = {'inline_keyboard': self.keyboard}
         return json_dict
 
@@ -204,10 +203,10 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable):
         self.pay = pay
         self.login_url = login_url
 
-    async def to_json(self):
-        return json.dumps(await self.to_dict())
+    def to_json(self):
+        return json.dumps(self.to_dict())
 
-    async def to_dict(self):
+    def to_dict(self):
         json_dict = {'text': self.text}
 
         if self.url:
@@ -223,6 +222,6 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable):
         if self.pay is not None:
             json_dict['pay'] = self.pay
         if self.login_url is not None:
-            json_dict['login_url'] = await self.login_url.to_dict()
+            json_dict['login_url'] = self.login_url.to_dict()
 
         return json_dict

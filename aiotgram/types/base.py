@@ -19,13 +19,13 @@ from abc import ABCMeta, abstractmethod
 
 class Dictionaryable(metaclass=ABCMeta):
     @abstractmethod
-    async def to_dict(self):
+    def to_dict(self):
         pass
 
 
 class JsonSerializable(metaclass=ABCMeta):
     @abstractmethod
-    async def to_json(self):
+    def to_json(self):
         pass
 
 
@@ -36,7 +36,7 @@ class JsonDeserializable(metaclass=ABCMeta):
     """
 
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         """
         Returns an instance of this class from the given json dict or string.
         This function must be overridden by subclasses.
@@ -45,7 +45,7 @@ class JsonDeserializable(metaclass=ABCMeta):
         raise NotImplementedError
 
     @staticmethod
-    async def check_json(json_type):
+    def check_json(json_type):
         """
         Checks whether json_type is a dict or a string. If it is already a dict, it is returned as-is.
         If it is not, it is converted to a dict by means of json.loads(json_type)
