@@ -20,14 +20,14 @@ from .common import User, PhotoSize, MessageEntity
 
 
 class InlineQueryResultGame(JsonSerializable):
-    def __init__(self, id_, game_short_name, reply_markup=None):
+    def __init__(self, id, game_short_name, reply_markup=None):
         self.type = 'game'
-        self.id_ = id_
+        self.id = id
         self.game_short_name = game_short_name
         self.reply_markup = reply_markup
 
     def to_json(self):
-        json_dic = {'type': self.type, 'id': self.id_, 'game_short_name': self.game_short_name}
+        json_dic = {'type': self.type, 'id': self.id, 'game_short_name': self.game_short_name}
         if self.reply_markup:
             json_dic['reply_markup'] = self.reply_markup.to_dict()
         return json.dumps(json_dic)

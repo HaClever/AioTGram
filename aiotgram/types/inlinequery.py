@@ -49,27 +49,27 @@ class InlineQuery(JsonDeserializable):
             return None
 
         obj = cls.check_json(json_string)
-        id_ = obj['id']
+        id = obj['id']
         from_user = User.de_json(obj['from'])
         location = Location.de_json(obj.get('location'))
         query = obj['query']
         offset = obj['offset']
 
-        return cls(id_, from_user, location, query, offset)
+        return cls(id, from_user, location, query, offset)
 
-    def __init__(self, id_, from_user, location, query, offset):
+    def __init__(self, id, from_user, location, query, offset):
         """
         This object represents an incoming inline query.
         When the user sends an empty query, your bot could
         return some default or trending results.
-        :param id_: string Unique identifier for this query
+        :param id: string Unique identifier for this query
         :param from_user: User Sender
         :param location: Sender location, only for bots that request user location
         :param query: String Text of the query
         :param offset: String Offset of the results to be returned, can be controlled by the bot
         :return: InlineQuery Object
         """
-        self.id_ = id_
+        self.id = id
         self.from_user = from_user
         self.location = location
         self.query = query
@@ -169,7 +169,7 @@ class ChosenInlineResult(JsonDeserializable):
 
 
 class InlineQueryResultArticle(JsonSerializable):
-    def __init__(self, id_, title, input_message_content, reply_markup=None, url=None,
+    def __init__(self, id, title, input_message_content, reply_markup=None, url=None,
                  hide_url=None, description=None, thumb_url=None, thumb_width=None, thumb_height=None):
         """
         Represents a link to an article or web page.
@@ -186,7 +186,7 @@ class InlineQueryResultArticle(JsonSerializable):
         :return:
         """
         self.type = 'article'
-        self.id_ = id_
+        self.id = id
         self.title = title
         self.input_message_content = input_message_content
         self.reply_markup = reply_markup
@@ -200,7 +200,7 @@ class InlineQueryResultArticle(JsonSerializable):
     def to_json(self):
         json_dict = {
             'type': self.type,
-            'id': self.id_,
+            'id': self.id,
             'title': self.title,
             'input_message_content': self.input_message_content.to_dict()}
 
@@ -223,11 +223,11 @@ class InlineQueryResultArticle(JsonSerializable):
 
 
 class InlineQueryResultPhoto(JsonSerializable):
-    def __init__(self, id_, photo_url, thumb_url, photo_width=None, photo_height=None, title=None,
+    def __init__(self, id, photo_url, thumb_url, photo_width=None, photo_height=None, title=None,
                  description=None, caption=None, parse_mode=None, reply_markup=None, input_message_content=None):
         """
         Represents a link to a photo.
-        :param id_: Unique identifier for this result, 1-64 bytes
+        :param id: Unique identifier for this result, 1-64 bytes
         :param photo_url: A valid URL of the photo. Photo must be in jpeg format. Photo size must not exceed 5MB
         :param thumb_url: URL of the thumbnail for the photo
         :param photo_width: Width of the photo.
@@ -242,7 +242,7 @@ class InlineQueryResultPhoto(JsonSerializable):
         :return:
         """
         self.type = 'photo'
-        self.id_ = id_
+        self.id = id
         self.photo_url = photo_url
         self.photo_width = photo_width
         self.photo_height = photo_height
@@ -255,7 +255,7 @@ class InlineQueryResultPhoto(JsonSerializable):
         self.input_message_content = input_message_content
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id_, 'photo_url': self.photo_url, 'thumb_url': self.thumb_url}
+        json_dict = {'type': self.type, 'id': self.id, 'photo_url': self.photo_url, 'thumb_url': self.thumb_url}
 
         if self.photo_width:
             json_dict['photo_width'] = self.photo_width
@@ -278,11 +278,11 @@ class InlineQueryResultPhoto(JsonSerializable):
 
 
 class InlineQueryResultGif(JsonSerializable):
-    def __init__(self, id_, gif_url, thumb_url, gif_width=None, gif_height=None, title=None, caption=None,
+    def __init__(self, id, gif_url, thumb_url, gif_width=None, gif_height=None, title=None, caption=None,
                  reply_markup=None, input_message_content=None, gif_duration=None):
         """
         Represents a link to an animated GIF file.
-        :param id_: Unique identifier for this result, 1-64 bytes.
+        :param id: Unique identifier for this result, 1-64 bytes.
         :param gif_url: A valid URL for the GIF file. File size must not exceed 1MB
         :param thumb_url: URL of the static thumbnail (jpeg or gif) for the result.
         :param gif_width: Width of the GIF.
@@ -294,7 +294,7 @@ class InlineQueryResultGif(JsonSerializable):
         :return:
         """
         self.type = 'gif'
-        self.id_ = id_
+        self.id = id
         self.gif_url = gif_url
         self.gif_width = gif_width
         self.gif_height = gif_height
@@ -306,7 +306,7 @@ class InlineQueryResultGif(JsonSerializable):
         self.gif_duration = gif_duration
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id_, 'gif_url': self.gif_url, 'thumb_url': self.thumb_url}
+        json_dict = {'type': self.type, 'id': self.id, 'gif_url': self.gif_url, 'thumb_url': self.thumb_url}
         if self.gif_height:
             json_dict['gif_height'] = self.gif_height
         if self.gif_width:
@@ -326,11 +326,11 @@ class InlineQueryResultGif(JsonSerializable):
 
 
 class InlineQueryResultMpeg4Gif(JsonSerializable):
-    def __init__(self, id_, mpeg4_url, thumb_url, mpeg4_width=None, mpeg4_height=None, title=None, caption=None,
+    def __init__(self, id, mpeg4_url, thumb_url, mpeg4_width=None, mpeg4_height=None, title=None, caption=None,
                  parse_mode=None, reply_markup=None, input_message_content=None, mpeg4_duration=None):
         """
         Represents a link to a video animation (H.264/MPEG-4 AVC video without sound).
-        :param id_: Unique identifier for this result, 1-64 bytes
+        :param id: Unique identifier for this result, 1-64 bytes
         :param mpeg4_url: A valid URL for the MP4 file. File size must not exceed 1MB
         :param thumb_url: URL of the static thumbnail (jpeg or gif) for the result
         :param mpeg4_width: Video width
@@ -344,7 +344,7 @@ class InlineQueryResultMpeg4Gif(JsonSerializable):
         :return:
         """
         self.type = 'mpeg4_gif'
-        self.id_ = id_
+        self.id = id
         self.mpeg4_url = mpeg4_url
         self.mpeg4_width = mpeg4_width
         self.mpeg4_height = mpeg4_height
@@ -357,7 +357,7 @@ class InlineQueryResultMpeg4Gif(JsonSerializable):
         self.mpeg4_duration = mpeg4_duration
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id_, 'mpeg4_url': self.mpeg4_url, 'thumb_url': self.thumb_url}
+        json_dict = {'type': self.type, 'id': self.id, 'mpeg4_url': self.mpeg4_url, 'thumb_url': self.thumb_url}
 
         if self.mpeg4_width:
             json_dict['mpeg4_width'] = self.mpeg4_width
@@ -380,7 +380,7 @@ class InlineQueryResultMpeg4Gif(JsonSerializable):
 
 
 class InlineQueryResultVideo(JsonSerializable):
-    def __init__(self, id_, video_url, mime_type, thumb_url, title,
+    def __init__(self, id, video_url, mime_type, thumb_url, title,
                  caption=None, parse_mode=None, video_width=None, video_height=None, video_duration=None,
                  description=None, reply_markup=None, input_message_content=None):
         """
@@ -399,7 +399,7 @@ class InlineQueryResultVideo(JsonSerializable):
         :return:
         """
         self.type = 'video'
-        self.id_ = id_
+        self.id = id
         self.video_url = video_url
         self.mime_type = mime_type
         self.video_width = video_width
@@ -414,7 +414,7 @@ class InlineQueryResultVideo(JsonSerializable):
         self.reply_markup = reply_markup
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id_, 'video_url': self.video_url, 'mime_type': self.mime_type,
+        json_dict = {'type': self.type, 'id': self.id, 'video_url': self.video_url, 'mime_type': self.mime_type,
                      'thumb_url': self.thumb_url, 'title': self.title}
 
         if self.video_width:
@@ -438,10 +438,10 @@ class InlineQueryResultVideo(JsonSerializable):
 
 
 class InlineQueryResultAudio(JsonSerializable):
-    def __init__(self, id_, audio_url, title, caption=None, parse_mode=None, performer=None, audio_duration=None,
+    def __init__(self, id, audio_url, title, caption=None, parse_mode=None, performer=None, audio_duration=None,
                  reply_markup=None, input_message_content=None):
         self.type = 'audio'
-        self.id_ = id_
+        self.id = id
         self.audio_url = audio_url
         self.title = title
         self.caption = caption
@@ -452,7 +452,7 @@ class InlineQueryResultAudio(JsonSerializable):
         self.input_message_content = input_message_content
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id_, 'audio_url': self.audio_url, 'title': self.title}
+        json_dict = {'type': self.type, 'id': self.id, 'audio_url': self.audio_url, 'title': self.title}
 
         if self.caption:
             json_dict['caption'] = self.caption
@@ -471,10 +471,10 @@ class InlineQueryResultAudio(JsonSerializable):
 
 
 class InlineQueryResultVoice(JsonSerializable):
-    def __init__(self, id_, voice_url, title, caption=None, parse_mode=None, performer=None, voice_duration=None,
+    def __init__(self, id, voice_url, title, caption=None, parse_mode=None, performer=None, voice_duration=None,
                  reply_markup=None, input_message_content=None):
         self.type = 'voice'
-        self.id_ = id_
+        self.id = id
         self.voice_url = voice_url
         self.title = title
         self.caption = caption
@@ -485,7 +485,7 @@ class InlineQueryResultVoice(JsonSerializable):
         self.input_message_content = input_message_content
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id_, 'voice_url': self.voice_url, 'title': self.title}
+        json_dict = {'type': self.type, 'id': self.id, 'voice_url': self.voice_url, 'title': self.title}
 
         if self.caption:
             json_dict['caption'] = self.caption
@@ -504,10 +504,10 @@ class InlineQueryResultVoice(JsonSerializable):
 
 
 class InlineQueryResultDocument(JsonSerializable):
-    def __init__(self, id_, title, document_url, mime_type, caption=None, parse_mode=None, description=None,
+    def __init__(self, id, title, document_url, mime_type, caption=None, parse_mode=None, description=None,
                  reply_markup=None, input_message_content=None, thumb_url=None, thumb_width=None, thumb_height=None):
         self.type = 'document'
-        self.id_ = id_
+        self.id = id
         self.title = title
         self.document_url = document_url
         self.mime_type = mime_type
@@ -521,7 +521,7 @@ class InlineQueryResultDocument(JsonSerializable):
         self.thumb_height = thumb_height
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id_, 'title': self.title, 'document_url': self.document_url,
+        json_dict = {'type': self.type, 'id': self.id, 'title': self.title, 'document_url': self.document_url,
                      'mime_type': self.mime_type}
 
         if self.caption:
@@ -545,10 +545,10 @@ class InlineQueryResultDocument(JsonSerializable):
 
 
 class InlineQueryResultLocation(JsonSerializable):
-    def __init__(self, id_, title, latitude, longitude, live_period=None, reply_markup=None,
+    def __init__(self, id, title, latitude, longitude, live_period=None, reply_markup=None,
                  input_message_content=None, thumb_url=None, thumb_width=None, thumb_height=None):
         self.type = 'location'
-        self.id_ = id_
+        self.id = id
         self.title = title
         self.latitude = latitude
         self.longitude = longitude
@@ -560,7 +560,7 @@ class InlineQueryResultLocation(JsonSerializable):
         self.thumb_height = thumb_height
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id_': self.id_, 'latitude': self.latitude, 'longitude': self.longitude,
+        json_dict = {'type': self.type, 'id': self.id, 'latitude': self.latitude, 'longitude': self.longitude,
                      'title': self.title}
 
         if self.live_period:
@@ -580,10 +580,10 @@ class InlineQueryResultLocation(JsonSerializable):
 
 
 class InlineQueryResultVenue(JsonSerializable):
-    def __init__(self, id_, title, latitude, longitude, address, foursquare_id=None, reply_markup=None,
+    def __init__(self, id, title, latitude, longitude, address, foursquare_id=None, reply_markup=None,
                  input_message_content=None, thumb_url=None, thumb_width=None, thumb_height=None):
         self.type = 'venue'
-        self.id_ = id_
+        self.id = id
         self.title = title
         self.latitude = latitude
         self.longitude = longitude
@@ -596,7 +596,7 @@ class InlineQueryResultVenue(JsonSerializable):
         self.thumb_height = thumb_height
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id_, 'title': self.title, 'latitude': self.latitude,
+        json_dict = {'type': self.type, 'id': self.id, 'title': self.title, 'latitude': self.latitude,
                      'longitude': self.longitude, 'address': self.address}
 
         if self.foursquare_id:
@@ -616,10 +616,10 @@ class InlineQueryResultVenue(JsonSerializable):
 
 
 class InlineQueryResultContact(JsonSerializable):
-    def __init__(self, id_, phone_number, first_name, last_name=None, reply_markup=None,
+    def __init__(self, id, phone_number, first_name, last_name=None, reply_markup=None,
                  input_message_content=None, thumb_url=None, thumb_width=None, thumb_height=None):
         self.type = 'contact'
-        self.id_ = id_
+        self.id = id
         self.phone_number = phone_number
         self.first_name = first_name
         self.last_name = last_name
@@ -630,7 +630,7 @@ class InlineQueryResultContact(JsonSerializable):
         self.thumb_height = thumb_height
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id_, 'phone_number': self.phone_number, 'first_name': self.first_name}
+        json_dict = {'type': self.type, 'id': self.id, 'phone_number': self.phone_number, 'first_name': self.first_name}
 
         if self.last_name:
             json_dict['last_name'] = self.last_name
@@ -651,7 +651,7 @@ class InlineQueryResultContact(JsonSerializable):
 class BaseInlineQueryResultCached(JsonSerializable):
     def __init__(self):
         self.type = None
-        self.id_ = None
+        self.id = None
         self.title = None
         self.description = None
         self.caption = None
@@ -663,7 +663,7 @@ class BaseInlineQueryResultCached(JsonSerializable):
     def to_json(self):
         json_dict = self.payload_dic
         json_dict['type'] = self.type
-        json_dict['id'] = self.id_
+        json_dict['id'] = self.id
 
         if self.title:
             json_dict['title'] = self.title
@@ -682,11 +682,11 @@ class BaseInlineQueryResultCached(JsonSerializable):
 
 
 class InlineQueryResultCachedPhoto(BaseInlineQueryResultCached):
-    def __init__(self, id_, photo_file_id, title=None, description=None, caption=None, parse_mode=None,
+    def __init__(self, id, photo_file_id, title=None, description=None, caption=None, parse_mode=None,
                  reply_markup=None, input_message_content=None):
         BaseInlineQueryResultCached.__init__(self)
         self.type = 'photo'
-        self.id_ = id_
+        self.id = id
         self.photo_file_id = photo_file_id
         self.title = title
         self.description = description
@@ -698,11 +698,11 @@ class InlineQueryResultCachedPhoto(BaseInlineQueryResultCached):
 
 
 class InlineQueryResultCachedGif(BaseInlineQueryResultCached):
-    def __init__(self, id_, gif_file_id, title=None, description=None, caption=None, parse_mode=None, reply_markup=None,
+    def __init__(self, id, gif_file_id, title=None, description=None, caption=None, parse_mode=None, reply_markup=None,
                  input_message_content=None):
         BaseInlineQueryResultCached.__init__(self)
         self.type = 'gif'
-        self.id_ = id_
+        self.id = id
         self.gif_file_id = gif_file_id
         self.title = title
         self.description = description
@@ -714,11 +714,11 @@ class InlineQueryResultCachedGif(BaseInlineQueryResultCached):
 
 
 class InlineQueryResultCachedMpeg4Gif(BaseInlineQueryResultCached):
-    def __init__(self, id_, mpeg4_file_id, title=None, description=None, caption=None, parse_mode=None,
+    def __init__(self, id, mpeg4_file_id, title=None, description=None, caption=None, parse_mode=None,
                  reply_markup=None, input_message_content=None):
         BaseInlineQueryResultCached.__init__(self)
         self.type = 'mpeg4_gif'
-        self.id_ = id_
+        self.id = id
         self.mpeg4_file_id = mpeg4_file_id
         self.title = title
         self.description = description
@@ -730,10 +730,10 @@ class InlineQueryResultCachedMpeg4Gif(BaseInlineQueryResultCached):
 
 
 class InlineQueryResultCachedSticker(BaseInlineQueryResultCached):
-    def __init__(self, id_, sticker_file_id, reply_markup=None, input_message_content=None):
+    def __init__(self, id, sticker_file_id, reply_markup=None, input_message_content=None):
         BaseInlineQueryResultCached.__init__(self)
         self.type = 'sticker'
-        self.id_ = id_
+        self.id = id
         self.sticker_file_id = sticker_file_id
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
@@ -741,11 +741,11 @@ class InlineQueryResultCachedSticker(BaseInlineQueryResultCached):
 
 
 class InlineQueryResultCachedDocument(BaseInlineQueryResultCached):
-    def __init__(self, id_, document_file_id, title, description=None, caption=None, parse_mode=None, reply_markup=None,
+    def __init__(self, id, document_file_id, title, description=None, caption=None, parse_mode=None, reply_markup=None,
                  input_message_content=None):
         BaseInlineQueryResultCached.__init__(self)
         self.type = 'document'
-        self.id_ = id_
+        self.id = id
         self.document_file_id = document_file_id
         self.title = title
         self.description = description
@@ -757,11 +757,11 @@ class InlineQueryResultCachedDocument(BaseInlineQueryResultCached):
 
 
 class InlineQueryResultCachedVideo(BaseInlineQueryResultCached):
-    def __init__(self, id_, video_file_id, title, description=None, caption=None, parse_mode=None, reply_markup=None,
+    def __init__(self, id, video_file_id, title, description=None, caption=None, parse_mode=None, reply_markup=None,
                  input_message_content=None):
         BaseInlineQueryResultCached.__init__(self)
         self.type = 'video'
-        self.id_ = id_
+        self.id = id
         self.video_file_id = video_file_id
         self.title = title
         self.description = description
@@ -773,11 +773,11 @@ class InlineQueryResultCachedVideo(BaseInlineQueryResultCached):
 
 
 class InlineQueryResultCachedVoice(BaseInlineQueryResultCached):
-    def __init__(self, id_, voice_file_id, title, caption=None, parse_mode=None, reply_markup=None,
+    def __init__(self, id, voice_file_id, title, caption=None, parse_mode=None, reply_markup=None,
                  input_message_content=None):
         BaseInlineQueryResultCached.__init__(self)
         self.type = 'voice'
-        self.id_ = id_
+        self.id = id
         self.voice_file_id = voice_file_id
         self.title = title
         self.caption = caption
@@ -788,10 +788,10 @@ class InlineQueryResultCachedVoice(BaseInlineQueryResultCached):
 
 
 class InlineQueryResultCachedAudio(BaseInlineQueryResultCached):
-    def __init__(self, id_, audio_file_id, caption=None, parse_mode=None, reply_markup=None, input_message_content=None):
+    def __init__(self, id, audio_file_id, caption=None, parse_mode=None, reply_markup=None, input_message_content=None):
         BaseInlineQueryResultCached.__init__(self)
         self.type = 'audio'
-        self.id_ = id_
+        self.id = id
         self.audio_file_id = audio_file_id
         self.caption = caption
         self.reply_markup = reply_markup

@@ -2,6 +2,7 @@
 import sys
 import re
 import six
+import asyncio
 
 from aiotgram import apihelper, types, util
 
@@ -48,7 +49,7 @@ class AioTGram:
         self.poll_handlers = []
         self.poll_answer_handlers = []
 
-    async def enable_save_next_step_handlers(self, delay=120, filename='./.handler-saves/step.save'):
+    def enable_save_next_step_handlers(self, delay=120, filename='./.handler-saves/step.save'):
         """
         Enable saving next step handlers (by default saving disabled)
 
@@ -63,7 +64,7 @@ class AioTGram:
         """
         self.next_step_backend = FileHandlerBackend(self.next_step_backend.handlers, filename, delay)
 
-    async def load_next_step_handlers(self, filename="./.handler-saves/step.save", del_file_after_loading=True):
+    def load_next_step_handlers(self, filename="./.handler-saves/step.save", del_file_after_loading=True):
         """
         Load next step handlers from save file
 
@@ -76,7 +77,7 @@ class AioTGram:
         :param filename: Filename of the file where handlers was saved
         :param del_file_after_loading: Is passed True, after loading save file will be deleted
         """
-        await self.next_step_backend.load_handlers(filename, del_file_after_loading)
+        self.next_step_backend.load_handlers(filename, del_file_after_loading)
 
     async def set_webhook(self, url):
         await apihelper.set_webhook(self.token, url)
@@ -124,8 +125,8 @@ class AioTGram:
         if content_types is None:
             content_types = ['text']
 
-        async def decorator(handler):
-            handler_dict = await self._build_handler_dict(
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(
                 handler,
                 commands=commands,
                 regexp=regexp,
@@ -133,13 +134,13 @@ class AioTGram:
                 content_types=content_types,
                 **kwargs
             )
-            await self.add_message_handler(handler_dict)
+            self.add_message_handler(handler_dict)
 
             return handler
 
         return decorator
 
-    async def add_message_handler(self, handler_dict):
+    def add_message_handler(self, handler_dict):
         """
         Adds a message handler
         :param handler_dict:
@@ -147,7 +148,7 @@ class AioTGram:
         """
         self.message_handlers.append(handler_dict)
 
-    async def process_new_updates(self, updates):
+    def process_new_updates(self, updates):
         new_messages = []
         new_edited_messages = []
         new_channel_posts = []
@@ -220,7 +221,7 @@ class AioTGram:
     def process_new_edited_messages(self, edited_message):
         self._notify_command_handlers(self.edited_message_handlers, edited_message)
 
-    async def process_new_channel_posts(self, channel_post):
+    def process_new_channel_posts(self, channel_post):
         self._notify_command_handlers(self.channel_post_handlers, channel_post)
 
     def process_new_edited_channel_posts(self, edited_channel_post):
@@ -259,6 +260,7 @@ class AioTGram:
         """
         for i, message in enumerate(new_messages):
             need_pop = False
+            print(111, self.next_step_backend)
             handlers = self.next_step_backend.get_handlers(message.chat.id)
             for handler in handlers:
                 need_pop = True
@@ -327,7 +329,7 @@ class AioTGram:
         return True
 
     @staticmethod
-    async def _build_handler_dict(handler, **filters):
+    def _build_handler_dict(handler, **filters):
         """
         Builds a dictionary for a handler
         :param handler:

@@ -60,7 +60,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
             return None
 
         obj = cls.check_json(json_string)
-        id_ = obj['id']
+        id = obj['id']
         is_bot = obj['is_bot']
         first_name = obj['first_name']
         last_name = obj.get('last_name')
@@ -70,12 +70,12 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         can_read_all_group_messages = obj.get('can_read_all_group_messages')
         supports_inline_queries = obj.get('supports_inline_queries')
 
-        return cls(id_, is_bot, first_name, last_name, username, language_code,
+        return cls(id, is_bot, first_name, last_name, username, language_code,
                    can_join_groups, can_read_all_group_messages, supports_inline_queries)
 
-    def __init__(self, id_, is_bot, first_name, last_name=None, username=None, language_code=None, 
+    def __init__(self, id, is_bot, first_name, last_name=None, username=None, language_code=None, 
                  can_join_groups=None, can_read_all_group_messages=None, supports_inline_queries=None):
-        self.id_ = id_
+        self.id = id
         self.is_bot = is_bot
         self.first_name = first_name
         self.username = username
@@ -89,7 +89,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         return json.dumps(self.to_dict())
 
     def to_dict(self):
-        return {'id': self.id_,
+        return {'id': self.id,
                 'is_bot': self.is_bot,
                 'first_name': self.first_name,
                 'last_name': self.last_name,
@@ -107,16 +107,16 @@ class MessageEntity(JsonDeserializable):
             return None
 
         obj = cls.check_json(json_string)
-        type_ = obj['type']
+        type = obj['type']
         offset = obj['offset']
         length = obj['length']
         url = obj.get('url')
         user = User.de_json(obj.get('user'))
 
-        return cls(type_, offset, length, url, user)
+        return cls(type, offset, length, url, user)
 
-    def __init__(self, type_, offset, length, url=None, user=None):
-        self.type_ = type_
+    def __init__(self, type, offset, length, url=None, user=None):
+        self.type = type
         self.offset = offset
         self.length = length
         self.url = url

@@ -25,13 +25,13 @@ class GroupChat(JsonDeserializable):
             return None
 
         obj = cls.check_json(json_string)
-        id_ = obj['id']
+        id = obj['id']
         title = obj['title']
 
-        return cls(id_, title)
+        return cls(id, title)
 
-    def __init__(self, id_, title):
-        self.id_ = id_
+    def __init__(self, id, title):
+        self.id = id
         self.title = title
 
 

@@ -36,8 +36,8 @@ class Chat(JsonDeserializable):
             return None
 
         obj = cls.check_json(json_string)
-        id_ = obj['id']
-        type_ = obj['type']
+        id = obj['id']
+        type = obj['type']
         title = obj.get('title')
         username = obj.get('username')
         first_name = obj.get('first_name')
@@ -53,18 +53,18 @@ class Chat(JsonDeserializable):
         can_set_sticker_set = obj.get('can_set_sticker_set')
 
         return cls(
-            id_, type_, title, username, first_name, last_name,
+            id, type, title, username, first_name, last_name,
             all_members_are_administrators, photo, description, invite_link,
             pinned_message, permissions, slow_mode_delay, sticker_set_name,
             can_set_sticker_set)
 
-    def __init__(self, id_, type_, title=None, username=None, first_name=None,
+    def __init__(self, id, type, title=None, username=None, first_name=None,
                  last_name=None, all_members_are_administrators=None,
                  photo=None, description=None, invite_link=None,
                  pinned_message=None, permissions=None, slow_mode_delay=None,
                  sticker_set_name=None, can_set_sticker_set=None):
-        self.id_ = id_
-        self.type_ = type_
+        self.id = id
+        self.type = type
         self.title = title
         self.username = username
         self.first_name = first_name
@@ -370,7 +370,7 @@ class CallbackQuery(JsonDeserializable):
             return None
 
         obj = cls.check_json(json_string)
-        id_ = obj['id']
+        id = obj['id']
         from_user = User.de_json(obj['from'])
         message = Message.de_json(obj.get('message'))
         inline_message_id = obj.get('inline_message_id')
@@ -378,12 +378,12 @@ class CallbackQuery(JsonDeserializable):
         data = obj.get('data')
         game_short_name = obj.get('game_short_name')
 
-        return cls(id_, from_user, data, chat_instance, message, inline_message_id, game_short_name)
+        return cls(id, from_user, data, chat_instance, message, inline_message_id, game_short_name)
 
-    def __init__(self, id_, from_user, data, chat_instance, message=None, inline_message_id=None, game_short_name=None):
+    def __init__(self, id, from_user, data, chat_instance, message=None, inline_message_id=None, game_short_name=None):
         self.game_short_name = game_short_name
         self.chat_instance = chat_instance
-        self.id_ = id_
+        self.id = id
         self.from_user = from_user
         self.message = message
         self.data = data
@@ -430,7 +430,7 @@ class Poll(JsonDeserializable):
             poll_id=None, total_voter_count=None, is_closed=None, is_anonymous=None, poll_type=None,
             allows_multiple_answers=None, correct_option_id=None, explanation=None, explanation_entities=None,
             open_period=None, close_date=None):
-        self.id_ = poll_id
+        self.id = poll_id
         self.question = question
         self.options = options
         self.total_voter_count = total_voter_count

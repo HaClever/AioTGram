@@ -104,8 +104,8 @@ class OrderInfo(JsonDeserializable):
 
 
 class ShippingOption(JsonSerializable):
-    def __init__(self, id_, title):
-        self.id_ = id_
+    def __init__(self, id, title):
+        self.id = id
         self.title = title
         self.prices = []
 
@@ -122,7 +122,7 @@ class ShippingOption(JsonSerializable):
         price_list = []
         for price in self.prices:
             price_list.append(price.to_dict())
-        json_dict = json.dumps({'id': self.id_, 'title': self.title, 'prices': price_list})
+        json_dict = json.dumps({'id': self.id, 'title': self.title, 'prices': price_list})
         return json_dict
 
 
@@ -162,15 +162,15 @@ class ShippingQuery(JsonDeserializable):
             return None
 
         obj = cls.check_json(json_string)
-        id_ = obj['id']
+        id = obj['id']
         from_user = User.de_json(obj['from'])
         invoice_payload = obj['invoice_payload']
         shipping_address = ShippingAddress.de_json(obj['shipping_address'])
 
-        return cls(id_, from_user, invoice_payload, shipping_address)
+        return cls(id, from_user, invoice_payload, shipping_address)
 
-    def __init__(self, id_, from_user, invoice_payload, shipping_address):
-        self.id_ = id_
+    def __init__(self, id, from_user, invoice_payload, shipping_address):
+        self.id = id
         self.from_user = from_user
         self.invoice_payload = invoice_payload
         self.shipping_address = shipping_address
@@ -183,7 +183,7 @@ class PreCheckoutQuery(JsonDeserializable):
             return None
 
         obj = cls.check_json(json_string)
-        id_ = obj['id']
+        id = obj['id']
         from_user = User.de_json(obj['from'])
         currency = obj['currency']
         total_amount = obj['total_amount']
@@ -191,10 +191,10 @@ class PreCheckoutQuery(JsonDeserializable):
         shipping_option_id = obj.get('shipping_option_id')
         order_info = OrderInfo.de_json(obj.get('order_info'))
 
-        return cls(id_, from_user, currency, total_amount, invoice_payload, shipping_option_id, order_info)
+        return cls(id, from_user, currency, total_amount, invoice_payload, shipping_option_id, order_info)
 
-    def __init__(self, id_, from_user, currency, total_amount, invoice_payload, shipping_option_id, order_info):
-        self.id_ = id_
+    def __init__(self, id, from_user, currency, total_amount, invoice_payload, shipping_option_id, order_info):
+        self.id = id
         self.from_user = from_user
         self.currency = currency
         self.total_amount = total_amount

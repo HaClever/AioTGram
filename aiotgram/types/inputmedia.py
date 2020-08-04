@@ -12,8 +12,6 @@ Types:
 - InputMediaDocument
 """
 
-import asyncio
-
 try:
     import ujson as json
 except ImportError:
@@ -25,8 +23,8 @@ from .base import JsonSerializable, Dictionaryable
 
 
 class InputMedia(Dictionaryable, JsonSerializable):
-    def __init__(self, type_, media, caption=None, parse_mode=None):
-        self.type_ = type_
+    def __init__(self, type, media, caption=None, parse_mode=None):
+        self.type = type
         self.media = media
         self.caption = caption
         self.parse_mode = parse_mode
@@ -44,7 +42,7 @@ class InputMedia(Dictionaryable, JsonSerializable):
         return json.dumps(self.to_dict())
 
     def to_dict(self):
-        json_dict = {'type': self.type_, 'media': self._media_dic}
+        json_dict = {'type': self.type, 'media': self._media_dic}
 
         if self.caption:
             json_dict['caption'] = self.caption
@@ -62,7 +60,7 @@ class InputMedia(Dictionaryable, JsonSerializable):
 
 class InputMediaPhoto(InputMedia):
     def __init__(self, media, caption=None, parse_mode=None):
-        super(InputMediaPhoto, self).__init__(type_="photo", media=media, caption=caption, parse_mode=parse_mode)
+        super(InputMediaPhoto, self).__init__(type="photo", media=media, caption=caption, parse_mode=parse_mode)
 
     def to_dict(self):
         return super(InputMediaPhoto, self).to_dict()
@@ -71,7 +69,7 @@ class InputMediaPhoto(InputMedia):
 class InputMediaVideo(InputMedia):
     def __init__(self, media, thumb=None, caption=None, parse_mode=None, width=None, height=None, duration=None,
                  supports_streaming=None):
-        super(InputMediaVideo, self).__init__(type_="video", media=media, caption=caption, parse_mode=parse_mode)
+        super(InputMediaVideo, self).__init__(type="video", media=media, caption=caption, parse_mode=parse_mode)
         self.thumb = thumb
         self.width = width
         self.height = height
@@ -97,7 +95,7 @@ class InputMediaVideo(InputMedia):
 
 class InputMediaAnimation(InputMedia):
     def __init__(self, media, thumb=None, caption=None, parse_mode=None, width=None, height=None, duration=None):
-        super(InputMediaAnimation, self).__init__(type_="animation", media=media, caption=caption, parse_mode=parse_mode)
+        super(InputMediaAnimation, self).__init__(type="animation", media=media, caption=caption, parse_mode=parse_mode)
         self.thumb = thumb
         self.width = width
         self.height = height
@@ -120,7 +118,7 @@ class InputMediaAnimation(InputMedia):
 
 class InputMediaAudio(InputMedia):
     def __init__(self, media, thumb=None, caption=None, parse_mode=None, duration=None, performer=None, title=None):
-        super(InputMediaAudio, self).__init__(type_="audio", media=media, caption=caption, parse_mode=parse_mode)
+        super(InputMediaAudio, self).__init__(type="audio", media=media, caption=caption, parse_mode=parse_mode)
         self.thumb = thumb
         self.duration = duration
         self.performer = performer
@@ -143,7 +141,7 @@ class InputMediaAudio(InputMedia):
 
 class InputMediaDocument(InputMedia):
     def __init__(self, media, thumb=None, caption=None, parse_mode=None):
-        super(InputMediaDocument, self).__init__(type_="document", media=media, caption=caption, parse_mode=parse_mode)
+        super(InputMediaDocument, self).__init__(type="document", media=media, caption=caption, parse_mode=parse_mode)
         self.thumb = thumb
 
     def to_dict(self):
