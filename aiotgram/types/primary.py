@@ -25,11 +25,11 @@ from .common import PhotoSize
 
 class Dice(JsonSerializable, Dictionaryable, JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         value = obj['value']
         emoji = obj['emoji']
 
@@ -39,21 +39,21 @@ class Dice(JsonSerializable, Dictionaryable, JsonDeserializable):
         self.value = value
         self.emoji = emoji
 
-    async def to_json(self):
-        return json.dumps(await self.to_dict())
+    def to_json(self):
+        return json.dumps(self.to_dict())
 
-    async def to_dict(self):
+    def to_dict(self):
         return {'value': self.value,
                 'emoji': self.emoji}
 
 
 class Audio(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         file_id = obj['file_id']
         duration = obj['duration']
         performer = obj.get('performer')
@@ -74,11 +74,11 @@ class Audio(JsonDeserializable):
 
 class Voice(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         file_id = obj['file_id']
         duration = obj['duration']
         mime_type = obj.get('mime_type')
@@ -95,15 +95,15 @@ class Voice(JsonDeserializable):
 
 class Document(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         file_id = obj['file_id']
         thumb = None
         if 'thumb' in obj and 'file_id' in obj['thumb']:
-            thumb = await PhotoSize.de_json(obj['thumb'])
+            thumb = PhotoSize.de_json(obj['thumb'])
 
         file_name = obj.get('file_name')
         mime_type = obj.get('mime_type')
@@ -121,16 +121,16 @@ class Document(JsonDeserializable):
 
 class Video(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         file_id = obj['file_id']
         width = obj['width']
         height = obj['height']
         duration = obj['duration']
-        thumb = await PhotoSize.de_json(obj.get('thumb'))
+        thumb = PhotoSize.de_json(obj.get('thumb'))
         mime_type = obj.get('mime_type')
         file_size = obj.get('file_size')
 
@@ -148,15 +148,15 @@ class Video(JsonDeserializable):
 
 class VideoNote(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         file_id = obj['file_id']
         length = obj['length']
         duration = obj['duration']
-        thumb = await PhotoSize.de_json(obj.get('thumb'))
+        thumb = PhotoSize.de_json(obj.get('thumb'))
         file_size = obj.get('file_size')
 
         return cls(file_id, length, duration, thumb, file_size)
@@ -171,11 +171,11 @@ class VideoNote(JsonDeserializable):
 
 class Contact(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         phone_number = obj['phone_number']
         first_name = obj['first_name']
         last_name = obj.get('last_name')
@@ -192,11 +192,11 @@ class Contact(JsonDeserializable):
 
 class Location(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         longitude = obj['longitude']
         latitude = obj['latitude']
 
@@ -209,12 +209,12 @@ class Location(JsonDeserializable):
 
 class Venue(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
-        location = await Location.de_json(obj['location'])
+        obj = cls.check_json(json_string)
+        location = Location.de_json(obj['location'])
         title = obj['title']
         address = obj['address']
         foursquare_id = obj.get('foursquare_id')
@@ -230,11 +230,11 @@ class Venue(JsonDeserializable):
 
 class File(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         file_id = obj['file_id']
         file_size = obj.get('file_size')
         file_path = obj.get('file_path')

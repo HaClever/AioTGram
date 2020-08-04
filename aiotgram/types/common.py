@@ -26,11 +26,11 @@ from .base import JsonDeserializable, Dictionaryable, JsonSerializable
 
 class WebhookInfo(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         url = obj['url']
         has_custom_certificate = obj['has_custom_certificate']
         pending_update_count = obj['pending_update_count']
@@ -55,11 +55,11 @@ class WebhookInfo(JsonDeserializable):
 
 class User(JsonDeserializable, Dictionaryable, JsonSerializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         id_ = obj['id']
         is_bot = obj['is_bot']
         first_name = obj['first_name']
@@ -85,10 +85,10 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.can_read_all_group_messages = can_read_all_group_messages
         self.supports_inline_queries = supports_inline_queries
 
-    async def to_json(self):
+    def to_json(self):
         return json.dumps(self.to_dict())
 
-    async def to_dict(self):
+    def to_dict(self):
         return {'id': self.id_,
                 'is_bot': self.is_bot,
                 'first_name': self.first_name,
@@ -102,16 +102,16 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
 
 class MessageEntity(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         type_ = obj['type']
         offset = obj['offset']
         length = obj['length']
         url = obj.get('url')
-        user = await User.de_json(obj.get('user'))
+        user = User.de_json(obj.get('user'))
 
         return cls(type_, offset, length, url, user)
 
@@ -125,11 +125,11 @@ class MessageEntity(JsonDeserializable):
 
 class PhotoSize(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         file_id = obj['file_id']
         width = obj['width']
         height = obj['height']
@@ -146,20 +146,17 @@ class PhotoSize(JsonDeserializable):
 
 class UserProfilePhotos(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         total_count = obj['total_count']
 
         photos = []
         for x in obj['photos']:
-            photos.extend(
-                await asyncio.gather(
-                    *(asyncio.create_task(PhotoSize.de_json(y)) for y in x)
-                )
-            )
+            for y in x:
+                photos.append(PhotoSize.de_json(y))
 
         return cls(total_count, photos)
 
@@ -172,7 +169,7 @@ class ForceReply(JsonSerializable):
     def __init__(self, selective=None):
         self.selective = selective
 
-    async def to_json(self):
+    def to_json(self):
         json_dict = {'force_reply': True}
         if self.selective:
             json_dict['selective'] = True
@@ -186,10 +183,10 @@ class LoginUrl(Dictionaryable, JsonSerializable):
         self.bot_username = bot_username
         self.request_write_access = request_write_access
 
-    async def to_json(self):
-        return json.dumps(await self.to_dict())
+    def to_json(self):
+        return json.dumps(self.to_dict())
 
-    async def to_dict(self):
+    def to_dict(self):
         json_dict = {'url': self.url}
         if self.forward_text:
             json_dict['forward_text'] = self.forward_text
@@ -212,8 +209,8 @@ class BotCommand(JsonSerializable):
         self.command = command
         self.description = description
 
-    async def to_json(self):
-        return json.dumps(await self.to_dict())
+    def to_json(self):
+        return json.dumps(self.to_dict())
 
-    async def to_dict(self):
+    def to_dict(self):
         return {'command': self.command, 'description': self.description}

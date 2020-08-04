@@ -20,11 +20,11 @@ from .common import User
 
 class GroupChat(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         id_ = obj['id']
         title = obj['title']
 
@@ -37,11 +37,11 @@ class GroupChat(JsonDeserializable):
 
 class ChatPhoto(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         small_file_id = obj['small_file_id']
         big_file_id = obj['big_file_id']
 
@@ -54,12 +54,12 @@ class ChatPhoto(JsonDeserializable):
 
 class ChatMember(JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
-        user = await User.de_json(obj['user'])
+        obj = cls.check_json(json_string)
+        user = User.de_json(obj['user'])
         status = obj['status']
         custom_title = obj.get('custom_title')
         until_date = obj.get('until_date')
@@ -128,11 +128,11 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         self.can_pin_messages = can_pin_messages
 
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return json_string
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         can_send_messages = obj.get('can_send_messages')
         can_send_media_messages = obj.get('can_send_media_messages')
         can_send_polls = obj.get('can_send_polls')
@@ -147,10 +147,10 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
             can_send_other_messages, can_add_web_page_previews,
             can_change_info, can_invite_users, can_pin_messages)
 
-    async def to_json(self):
+    def to_json(self):
         return json.dumps(self.to_dict())
 
-    async def to_dict(self):
+    def to_dict(self):
         json_dict = dict()
         if self.can_send_messages is not None:
             json_dict['can_send_messages'] = self.can_send_messages

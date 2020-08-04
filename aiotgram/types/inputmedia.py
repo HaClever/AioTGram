@@ -31,19 +31,19 @@ class InputMedia(Dictionaryable, JsonSerializable):
         self.caption = caption
         self.parse_mode = parse_mode
 
-        media_is_str = asyncio.create_task(util.is_string(self.media))
+        media_is_str = util.is_string(self.media)
 
         if media_is_str:
             self._media_name = ''
             self._media_dic = self.media
         else:
-            self._media_name = asyncio.create_task(util.generate_random_token())
+            self._media_name = util.generate_random_token()
             self._media_dic = 'attach://{0}'.format(self._media_name)
 
-    async def to_json(self):
-        return json.dumps(await self.to_dict())
+    def to_json(self):
+        return json.dumps(self.to_dict())
 
-    async def to_dict(self):
+    def to_dict(self):
         json_dict = {'type': self.type_, 'media': self._media_dic}
 
         if self.caption:
@@ -53,19 +53,19 @@ class InputMedia(Dictionaryable, JsonSerializable):
 
         return json_dict
 
-    async def convert_input_media(self):
-        if await util.is_string(self.media):
-            return await self.to_json(), None
+    def convert_input_media(self):
+        if util.is_string(self.media):
+            return self.to_json(), None
 
-        return await self.to_json(), {self._media_name: self.media}
+        return self.to_json(), {self._media_name: self.media}
 
 
 class InputMediaPhoto(InputMedia):
     def __init__(self, media, caption=None, parse_mode=None):
         super(InputMediaPhoto, self).__init__(type_="photo", media=media, caption=caption, parse_mode=parse_mode)
 
-    async def to_dict(self):
-        return await super(InputMediaPhoto, self).to_dict()
+    def to_dict(self):
+        return super(InputMediaPhoto, self).to_dict()
 
 
 class InputMediaVideo(InputMedia):
@@ -78,8 +78,8 @@ class InputMediaVideo(InputMedia):
         self.duration = duration
         self.supports_streaming = supports_streaming
 
-    async def to_dict(self):
-        ret = await super(InputMediaVideo, self).to_dict()
+    def to_dict(self):
+        ret = super(InputMediaVideo, self).to_dict()
 
         if self.thumb:
             ret['thumb'] = self.thumb
@@ -103,8 +103,8 @@ class InputMediaAnimation(InputMedia):
         self.height = height
         self.duration = duration
 
-    async def to_dict(self):
-        ret = await super(InputMediaAnimation, self).to_dict()
+    def to_dict(self):
+        ret = super(InputMediaAnimation, self).to_dict()
 
         if self.thumb:
             ret['thumb'] = self.thumb
@@ -126,8 +126,8 @@ class InputMediaAudio(InputMedia):
         self.performer = performer
         self.title = title
 
-    async def to_dict(self):
-        ret = await super(InputMediaAudio, self).to_dict()
+    def to_dict(self):
+        ret = super(InputMediaAudio, self).to_dict()
 
         if self.thumb:
             ret['thumb'] = self.thumb
@@ -146,8 +146,8 @@ class InputMediaDocument(InputMedia):
         super(InputMediaDocument, self).__init__(type_="document", media=media, caption=caption, parse_mode=parse_mode)
         self.thumb = thumb
 
-    async def to_dict(self):
-        ret = await super(InputMediaDocument, self).to_dict()
+    def to_dict(self):
+        ret = super(InputMediaDocument, self).to_dict()
 
         if self.thumb:
             ret['thumb'] = self.thumb

@@ -19,11 +19,11 @@ from .common import User
 
 class PollOption(JsonSerializable, JsonDeserializable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         text = obj['text']
         voter_count = int(obj['voter_count'])
 
@@ -33,20 +33,20 @@ class PollOption(JsonSerializable, JsonDeserializable):
         self.text = text
         self.voter_count = voter_count
 
-    async def to_json(self):
+    def to_json(self):
         # send_poll Option is a simple string: https://core.telegram.org/bots/api#sendpoll
         return json.dumps(self.text)
 
 
 class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
     @classmethod
-    async def de_json(cls, json_string):
+    def de_json(cls, json_string):
         if json_string is None:
             return None
 
-        obj = await cls.check_json(json_string)
+        obj = cls.check_json(json_string)
         poll_id = obj['poll_id']
-        user = await User.de_json(obj['user'])
+        user = User.de_json(obj['user'])
         options_ids = obj['option_ids']
 
         return cls(poll_id, user, options_ids)
@@ -56,10 +56,10 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
         self.user = user
         self.options_ids = options_ids
 
-    async def to_json(self):
-        return json.dumps(await self.to_dict())
+    def to_json(self):
+        return json.dumps(self.to_dict())
 
-    async def to_dict(self):
+    def to_dict(self):
         return {'poll_id': self.poll_id,
-                'user': await self.user.to_dict(),
+                'user': self.user.to_dict(),
                 'options_ids': self.options_ids}
